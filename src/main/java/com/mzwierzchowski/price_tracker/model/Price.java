@@ -1,9 +1,11 @@
 package com.mzwierzchowski.price_tracker.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 public class Price {
     @Id
