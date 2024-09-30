@@ -1,6 +1,7 @@
 package com.mzwierzchowski.price_tracker.service;
 
 import com.mzwierzchowski.price_tracker.model.Product;
+import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,12 @@ public class ProductService {
      * @param product obiekt produktu do dodania
      * @return dodany lub istniejący produkt
      */
-    public Product addProduct(Product product) {
+    public Product addProduct(ProductDTO productRequest) {
+
+        Product product = new Product();
+        product.setName(productRequest.getName());
+        product.setUrl(productRequest.getUrl());
+
         Product existingProduct = productRepository.findByUrl(product.getUrl());
         if (existingProduct != null) {
             return existingProduct;
