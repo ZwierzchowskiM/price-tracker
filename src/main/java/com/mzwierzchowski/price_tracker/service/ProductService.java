@@ -14,32 +14,28 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    /**
-     * Dodaje nowy produkt do bazy danych.
-     * Jeśli produkt o podanym URL już istnieje, zwraca istniejący produkt.
-     *
-     * @param product obiekt produktu do dodania
-     * @return dodany lub istniejący produkt
-     */
+
+
     public Product addProduct(ProductDTO productRequest) {
+        // Pobierz nazwę produktu (raz podczas dodawania)
+        String productName = ProductScraper.getProductNameFromUrl(productRequest.getUrl());
 
-        Product product = new Product();
-        product.setName(productRequest.getName());
-        product.setUrl(productRequest.getUrl());
-
-        Product existingProduct = productRepository.findByUrl(product.getUrl());
-        if (existingProduct != null) {
-            return existingProduct;
+        if (productName == null) {
+            throw new RuntimeException("Nie udało się pobrać nazwy produktu z podanego URL");
         }
-        return productRepository.save(product);
+
+
+        Product newProduct = new Product();
+        newProduct.setName(productName);
+        newProduct.setUrl(productRequest.getUrl());
+
+        // Zapisz produkt w bazie danych (nazwa + URL, bez ceny na tym etapie)
+        productRepository.save(newProduct);
+
+        return newProduct;
     }
 
-    /**
-     * Pobiera produkt na podstawie ID.
-     *
-     * @param id identyfikator produktu
-     * @return znaleziony produkt lub null
-     */
+
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElse(null);
     }
