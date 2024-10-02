@@ -15,21 +15,33 @@ public class ProductService {
     }
 
 
+    public Product findOrCreateProductByUrl(String url) {
+        Product existingProduct = productRepository.findByUrl(url);
+        if (existingProduct != null) {
+            return existingProduct;
+        }
+
+        String productName = ProductScraper.getProductNameFromUrl(url);
+        if (productName == null) {
+            throw new RuntimeException("Nie udało się pobrać nazwy produktu z podanego URL");
+        }
+
+        Product newProduct = new Product();
+        newProduct.setName(productName);
+        newProduct.setUrl(url);
+        return productRepository.save(newProduct);
+    }
 
     public Product addProduct(ProductDTO productRequest) {
-        // Pobierz nazwę produktu (raz podczas dodawania)
         String productName = ProductScraper.getProductNameFromUrl(productRequest.getUrl());
 
         if (productName == null) {
             throw new RuntimeException("Nie udało się pobrać nazwy produktu z podanego URL");
         }
 
-
         Product newProduct = new Product();
         newProduct.setName(productName);
         newProduct.setUrl(productRequest.getUrl());
-
-        // Zapisz produkt w bazie danych (nazwa + URL, bez ceny na tym etapie)
         productRepository.save(newProduct);
 
         return newProduct;
