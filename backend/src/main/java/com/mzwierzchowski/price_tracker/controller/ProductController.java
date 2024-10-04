@@ -8,21 +8,23 @@ import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.service.PriceService;
 import com.mzwierzchowski.price_tracker.service.ProductService;
 import com.mzwierzchowski.price_tracker.service.UserProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
-    @Autowired
     private ProductService productService;
-
-    @Autowired
     private PriceService priceService;
-
-    @Autowired
     private UserProductService userProductService;
+
+    public ProductController(ProductService productService, PriceService priceService, UserProductService userProductService) {
+        this.productService = productService;
+        this.priceService = priceService;
+        this.userProductService = userProductService;
+    }
 
     @PostMapping
     public UserProduct addProduct(@RequestParam Long userId, @RequestBody ProductDTO productDto) {
@@ -36,8 +38,22 @@ public class ProductController {
         if (product != null) {
             return priceService.checkAndSavePrice(product);
         } else {
-            // Obsługa przypadku, gdy produkt nie istnieje
             return null;
         }
     }
+
+    @GetMapping("/")
+    public List<Product> getProducts() {
+    List<Product> products = productService.getAllProducts();
+    return products;
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Product> getProductsByUser(@PathVariable Long userId) {
+        List<UserProduct> userProducts = userProductService.getUserProductsByUserId(userId);
+        return userProducts.stream()
+                .map(UserProduct::getProduct)
+                .collect(Collectors.toList());
+    }
+
 }

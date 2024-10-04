@@ -3,6 +3,7 @@ package com.mzwierzchowski.price_tracker.service;
 import com.mzwierzchowski.price_tracker.model.Product;
 import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.repository.ProductRepository;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,5 +51,9 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 }

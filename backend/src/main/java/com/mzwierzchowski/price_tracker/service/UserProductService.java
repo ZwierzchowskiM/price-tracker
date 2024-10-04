@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserProductService {
@@ -22,18 +23,20 @@ public class UserProductService {
     private ProductService productService;
 
     public UserProduct assignProductToUser(Long userId, String productUrl) {
-        // Pobierz użytkownika na podstawie userId
         User user = userService.getUserById(userId);
 
-        // Sprawdź, czy produkt już istnieje, a jeśli nie, dodaj go
         Product product = productService.findOrCreateProductByUrl(productUrl);
 
-        // Utwórz nową relację UserProduct i zapisz ją
         UserProduct userProduct = new UserProduct();
         userProduct.setUser(user);
         userProduct.setProduct(product);
         userProduct.setDateAdded(LocalDateTime.now());
 
         return userProductRepository.save(userProduct);
+    }
+
+
+    public List<UserProduct> getUserProductsByUserId(Long userId) {
+        return userProductRepository.findByUserId(userId);
     }
 }
