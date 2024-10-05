@@ -23,16 +23,28 @@ const ProductList = ({ userId }) => {
     return (
         <div>
             <h2>Lista produktów</h2>
-            <ul>
-                {products.map(product => (
-                    <li key={product.id}>
-                        {product.name} -
-                        <a href={product.url} target="_blank" rel="noopener noreferrer">
-                            {product.url}
-                        </a>
-                    </li>
-                ))}
-            </ul>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazwa produktu</th>
+                        <th>Link do produktu</th>
+                        <th>Cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {products.map(product => (
+                        <tr key={product.id}>
+                            <td>{product.name}</td>
+                            <td>
+                                <a href={product.url} target="_blank" rel="noopener noreferrer">
+                                    {product.url}
+                                </a>
+                            </td>
+                            <td>{product.lastPrice} PLN</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
