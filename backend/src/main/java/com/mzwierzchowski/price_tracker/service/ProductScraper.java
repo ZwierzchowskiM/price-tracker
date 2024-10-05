@@ -1,5 +1,6 @@
 package com.mzwierzchowski.price_tracker.service;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,21 +12,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ProductScraper {
 
+  public static void setupChromeDriver() {
+    WebDriverManager.chromedriver().setup();
+  }
 
-  public static String getProductNameFromUrl(String url) {
-    System.setProperty(
-        "webdriver.chrome.driver",
-        "C:\\Users\\marci\\OneDrive\\Pulpit\\chromedriver-win32\\chromedriver.exe");
-
+  public static WebDriver getDriver() {
     ChromeOptions options = new ChromeOptions();
-    options.addArguments(
-        "--headless"); // Usuń tę linię, jeśli chcesz obserwować działanie przeglądarki
+    options.addArguments("--headless");
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
-    options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-    options.addArguments("--disable-blink-features=AutomationControlled");
 
-    WebDriver driver = new ChromeDriver(options);
+    return new ChromeDriver(options);
+  }
+
+  public static String getProductNameFromUrl(String url) {
+    WebDriver driver = getDriver();
 
     try {
       driver.get(url);
@@ -54,8 +55,7 @@ public class ProductScraper {
                   "var element = arguments[0];"
                       + "var child = element.firstChild;"
                       + "while(child && child.nodeType != 3) {"
-                      +
-                      "    child = child.nextSibling;"
+                      + "    child = child.nextSibling;"
                       + "}"
                       + "return child ? child.nodeValue.trim() : '';",
                   productNameElement);
@@ -79,18 +79,7 @@ public class ProductScraper {
   }
 
   public static Double getProductPriceFromUrl(String url) {
-    System.setProperty(
-        "webdriver.chrome.driver",
-        "C:\\Users\\marci\\OneDrive\\Pulpit\\chromedriver-win32\\chromedriver.exe");
-
-    ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless");
-    options.addArguments("--disable-gpu");
-    options.addArguments("--no-sandbox");
-    options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-    options.addArguments("--disable-blink-features=AutomationControlled");
-
-    WebDriver driver = new ChromeDriver(options);
+    WebDriver driver = getDriver();
 
     try {
       driver.get(url);
