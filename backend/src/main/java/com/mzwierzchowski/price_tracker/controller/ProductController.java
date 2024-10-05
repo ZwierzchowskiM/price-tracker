@@ -54,6 +54,16 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @GetMapping("/user/{userId}")
     public List<Product> getProductsByUser(@PathVariable Long userId) {
         List<UserProduct> userProducts = userProductService.getUserProductsByUserId(userId);
@@ -67,6 +77,17 @@ public class ProductController {
         boolean deleted = userProductService.removeProductFromUser(userId, productId);
         if (deleted) {
             return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/{productId}/price-history")
+    public ResponseEntity<List<Price>> getPriceHistory(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
+        if (product != null) {
+            List<Price> priceHistory = priceService.getPriceHistoryForProduct(product);
+            return ResponseEntity.ok(priceHistory);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

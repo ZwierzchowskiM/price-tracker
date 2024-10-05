@@ -5,6 +5,7 @@ import com.mzwierzchowski.price_tracker.model.Product;
 import com.mzwierzchowski.price_tracker.repository.PriceRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PriceService {
@@ -31,5 +32,9 @@ public class PriceService {
             System.err.println("Cena nie została znaleziona dla produktu: " + product.getName());
             return false;
         }
+    }
+
+    public List<Price> getPriceHistoryForProduct(Product product) {
+        return priceRepository.findByProduct(product);
     }
 }

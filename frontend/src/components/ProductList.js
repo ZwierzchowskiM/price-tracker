@@ -1,7 +1,9 @@
 ﻿import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ProductList = ({ userId }) => {
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
 
     const fetchProducts = async () => {
         try {
@@ -47,6 +49,10 @@ const ProductList = ({ userId }) => {
         }
     };
 
+    const handleDetailsClick = (productId) => {
+        navigate(`/products/${productId}`); // Przenosi na stronę szczegółów produktu
+    };
+
     return (
         <div>
             <h2>Lista produktów</h2>
@@ -56,6 +62,7 @@ const ProductList = ({ userId }) => {
                         <th>Nazwa produktu</th>
                         <th>Link do produktu</th>
                         <th>Cena</th>
+                        <th>Akcje</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,6 +77,9 @@ const ProductList = ({ userId }) => {
                             <td>{product.lastPrice} PLN</td>
                             <td>
                                 <button onClick={() => handleCheckPrice(product.id)}>Sprawdź cenę</button>
+                            </td>
+                            <td>
+                                <button onClick={() => handleDetailsClick(product.id)}>Szczegóły</button>
                             </td>
                             <td>
                                 <button onClick={() => handleDelete(product.id)}>Usuń</button>
