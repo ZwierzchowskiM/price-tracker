@@ -35,6 +35,14 @@ public class UserProductService {
         return userProductRepository.save(userProduct);
     }
 
+    public boolean removeProductFromUser(Long userId, Long productId) {
+        UserProduct userProduct = userProductRepository.findByUserIdAndProductId(userId, productId);
+        if (userProduct != null) {
+            userProductRepository.delete(userProduct);
+            return true;
+        }
+        return false;
+    }
 
     public List<UserProduct> getUserProductsByUserId(Long userId) {
         return userProductRepository.findByUserId(userId);

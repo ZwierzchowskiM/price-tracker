@@ -10,6 +10,9 @@ import com.mzwierzchowski.price_tracker.service.ProductService;
 import com.mzwierzchowski.price_tracker.service.UserProductService;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,12 +38,14 @@ public class ProductController {
 
 
     @GetMapping("/{productId}/check-price")
-    public Price checkPrice(@PathVariable Long productId) {
+    public ResponseEntity<?> checkPrice(@PathVariable Long productId) {
         Product product = productService.getProductById(productId);
-        if (product != null) {
-            return priceService.checkAndSavePrice(product);
+
+        boolean updated = priceService.checkAndSavePrice(product);
+        if (updated) {
+            return ResponseEntity.ok().build();
         } else {
-            return null;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -58,4 +63,13 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId, @RequestParam Long userId) {
+        boolean deleted = userProductService.removeProductFromUser(userId, productId);
+        if (deleted) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

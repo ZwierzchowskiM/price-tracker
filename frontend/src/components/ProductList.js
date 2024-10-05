@@ -20,6 +20,33 @@ const ProductList = ({ userId }) => {
         fetchProducts(); // Pobierz produkty, gdy komponent zostanie zamontowany
     }, [userId]); // Odśwież, gdy zmieni się userId
 
+    const handleDelete = async (productId) => {
+        const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            // Usuń produkt z listy po jego usunięciu z serwera
+            setProducts(products.filter(product => product.id !== productId));
+        } else {
+            console.error('Błąd podczas usuwania produktu');
+        }
+    };
+
+    const handleCheckPrice = async (productId) => {
+        const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            console.log(`Cena dla produktu o ID ${productId} została zaktualizowana.`);
+            // Opcjonalnie: możesz odświeżyć listę produktów, aby pokazać nową cenę
+            fetchProducts(); // Odświeżenie listy po sprawdzeniu ceny
+        } else {
+            console.error('Błąd podczas sprawdzania ceny produktu');
+        }
+    };
+
     return (
         <div>
             <h2>Lista produktów</h2>
@@ -41,6 +68,12 @@ const ProductList = ({ userId }) => {
                                 </a>
                             </td>
                             <td>{product.lastPrice} PLN</td>
+                            <td>
+                                <button onClick={() => handleCheckPrice(product.id)}>Sprawdź cenę</button>
+                            </td>
+                            <td>
+                                <button onClick={() => handleDelete(product.id)}>Usuń</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
