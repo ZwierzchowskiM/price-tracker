@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+ï»¿import React, { useState } from 'react';
 
 const AddProductForm = ({ onProductAdded }) => {
     const [productUrl, setProductUrl] = useState('');
+    const [userId, setUserId] = useState(''); // Nowe pole do ID uÅ¼ytkownika
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:8080/api/products?userId=1', {
+        const response = await fetch(`http://localhost:8080/api/products?userId=${userId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -17,14 +18,25 @@ const AddProductForm = ({ onProductAdded }) => {
         if (response.ok) {
             console.log('Produkt dodany!');
             setProductUrl('');
-            onProductAdded(); // Wywo³aj funkcjê odœwie¿aj¹c¹ listê produktów
+            setUserId(''); // Zresetuj pole uÅ¼ytkownika po dodaniu produktu
+            onProductAdded(); // Wywoï¿½aj funkcjÄ™ odswieÅ¼ajÄ…cÄ… listÄ™ produktÃ³w
         } else {
-            console.log('B³¹d podczas dodawania produktu');
+            console.log('Bï¿½ï¿½d podczas dodawania produktu');
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
+            <label>
+                ID uÅ¼ytkownika:
+                <input
+                    type="text"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    required
+                />
+            </label>
+            <br />
             <label>
                 URL produktu:
                 <input
@@ -34,6 +46,7 @@ const AddProductForm = ({ onProductAdded }) => {
                     required
                 />
             </label>
+            <br />
             <button type="submit">Dodaj produkt</button>
         </form>
     );
