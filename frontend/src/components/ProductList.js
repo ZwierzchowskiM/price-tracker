@@ -10,8 +10,23 @@ const ProductList = ({ userId }) => {
     const navigate = useNavigate();
 
     const fetchProducts = async () => {
+        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+
+        if (!token) {
+            console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            return;  // Zatrzymaj, jeśli nie ma tokena
+        }
+
         try {
-            const response = await fetch(`http://localhost:8080/api/products/user/${userId}`);
+            const response = await fetch(`http://localhost:8080/api/products/user/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
+                    'Content-Type': 'application/json',  // Ustaw nagłówki
+                },
+            });
+
+
             if (!response.ok) {
                 throw new Error(`Błąd HTTP: ${response.status}`);
             }
@@ -23,8 +38,8 @@ const ProductList = ({ userId }) => {
     };
 
     useEffect(() => {
-        fetchProducts(); // Pobierz produkty, gdy komponent zostanie zamontowany
-    }, [userId]); // Odśwież, gdy zmieni się userId
+        fetchProducts(); 
+    }, [userId]); 
 
     const handleDelete = async (productId) => {
         const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
@@ -40,8 +55,18 @@ const ProductList = ({ userId }) => {
     };
 
     const handleCheckPrice = async (productId) => {
+        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+        if (!token) {
+            console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            return;
+        }
+
         const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
             method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
+                'Content-Type': 'application/json',
+            },
         });
 
         if (response.ok) {
