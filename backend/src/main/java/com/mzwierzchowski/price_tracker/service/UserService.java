@@ -5,6 +5,8 @@ import com.mzwierzchowski.price_tracker.model.dtos.UserDTO;
 import com.mzwierzchowski.price_tracker.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,16 +14,18 @@ public class UserService {
 
   
   private UserRepository userRepository;
+  private PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public User addUser(UserDTO newUser) {
     User user = new User();
     user.setUsername(newUser.getUsername());
     user.setEmail(newUser.getEmail());
-    user.setPassword(newUser.getPassword());
+    user.setPassword(passwordEncoder.encode(newUser.getPassword()));  // Szyfrowanie hasła
     return userRepository.save(user);
   }
 
