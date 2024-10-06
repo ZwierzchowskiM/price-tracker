@@ -1,8 +1,9 @@
 ﻿import React, { useState } from 'react';
+import { TextField, Button, Box } from '@mui/material';
 
 const AddProductForm = ({ onProductAdded }) => {
     const [productUrl, setProductUrl] = useState('');
-    const [userId, setUserId] = useState(''); // Nowe pole do ID użytkownika
+    const [userId, setUserId] = useState(''); // Pole ID użytkownika
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,37 +19,37 @@ const AddProductForm = ({ onProductAdded }) => {
         if (response.ok) {
             console.log('Produkt dodany!');
             setProductUrl('');
-            setUserId(''); // Zresetuj pole użytkownika po dodaniu produktu
-            onProductAdded(); // Wywo�aj funkcję odswieżającą listę produktów
+            setUserId(''); // Zresetuj pole ID użytkownika po dodaniu produktu
+            onProductAdded(); // Wywołaj funkcję odświeżającą listę produktów
         } else {
-            console.log('B��d podczas dodawania produktu');
+            console.log('Błąd podczas dodawania produktu');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                ID użytkownika:
-                <input
-                    type="text"
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
-                    required
-                />
-            </label>
-            <br />
-            <label>
-                URL produktu:
-                <input
-                    type="text"
-                    value={productUrl}
-                    onChange={(e) => setProductUrl(e.target.value)}
-                    required
-                />
-            </label>
-            <br />
-            <button type="submit">Dodaj produkt</button>
-        </form>
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: '400px', margin: '0 auto' }}
+        >
+            <TextField
+                label="ID użytkownika"
+                variant="outlined"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                required
+            />
+            <TextField
+                label="URL produktu"
+                variant="outlined"
+                value={productUrl}
+                onChange={(e) => setProductUrl(e.target.value)}
+                required
+            />
+            <Button type="submit" variant="contained" color="primary">
+                Dodaj produkt
+            </Button>
+        </Box>
     );
 };
 

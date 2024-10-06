@@ -1,5 +1,9 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button
+} from '@mui/material';
+
 
 const ProductList = ({ userId }) => {
     const [products, setProducts] = useState([]);
@@ -54,41 +58,41 @@ const ProductList = ({ userId }) => {
     };
 
     return (
-        <div>
-            <h2>Lista produktów</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nazwa produktu</th>
-                        <th>Link do produktu</th>
-                        <th>Cena</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <TableContainer component={Paper}>
+            <Table>
+        
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Nazwa produktu</TableCell>
+                        <TableCell>Link do produktu</TableCell>
+                        <TableCell>Cena</TableCell>
+                        <TableCell>Akcje</TableCell>
+                    </TableRow>
+                </TableHead>
+                    <TableBody>
                     {products.map(product => (
-                        <tr key={product.id}>
-                            <td>{product.name}</td>
-                            <td>
+                        <TableRow key={product.id}>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>
                                 <a href={product.url} target="_blank" rel="noopener noreferrer">
                                     {product.url}
                                 </a>
-                            </td>
-                            <td>{product.lastPrice} PLN</td>
-                            <td>
+                            </TableCell>
+                            <TableCell>{product.lastPrice} PLN</TableCell>
+                            <TableCell>
                                 <button onClick={() => handleCheckPrice(product.id)}>Sprawdź cenę</button>
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                                 <button onClick={() => handleDetailsClick(product.id)}>Szczegóły</button>
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                                 <button onClick={() => handleDelete(product.id)}>Usuń</button>
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                </tbody>
-            </table>
-        </div>
+                    </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
 
