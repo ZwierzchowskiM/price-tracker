@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PriceHistoryChart from './PriceHistoryChart'; // Import wykresu historii cen
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -44,18 +43,17 @@ const ProductDetails = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {priceHistory.map((price) => (
-                        <tr key={price.id}>
-                            <td>{new Date(price.dateChecked).toLocaleDateString()}</td>
-                            <td>{price.priceValue}</td>
-                        </tr>
-                    ))}
+                    {priceHistory
+                        .sort((a, b) => new Date(b.dateChecked) - new Date(a.dateChecked))  // Sortowanie od najnowszych do najstarszych
+                        .map((price) => (
+                            <tr key={price.id}>
+                                <td>{new Date(price.dateChecked).toLocaleDateString()}</td>
+                                <td>{price.priceValue}</td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
 
-            {/* Wyœwietlenie wykresu */}
-            <h3>Historia cen</h3>
-            <PriceHistoryChart productId={productId} /> {/* Wykres historii cen */}
         </div>
     );
 };
