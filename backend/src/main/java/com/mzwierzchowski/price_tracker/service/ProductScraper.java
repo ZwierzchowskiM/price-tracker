@@ -2,6 +2,7 @@ package com.mzwierzchowski.price_tracker.service;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.time.Duration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openqa.selenium.*;
@@ -12,15 +13,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ProductScraper {
 
-  public static void setupChromeDriver() {
-    WebDriverManager.chromedriver().setup();
-  }
 
   public static WebDriver getDriver() {
+    WebDriverManager.chromedriver().setup();
     ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless");
+    options.addArguments("--headless=new");
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
+    options.addArguments("--disable-dev-shm-usage"); // Poprawa działania w środowiskach o ograniczonej pamięci (np. Docker)
+
 
     return new ChromeDriver(options);
   }
@@ -31,17 +32,16 @@ public class ProductScraper {
     try {
       driver.get(url);
 
-      WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+      WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
       JavascriptExecutor js = (JavascriptExecutor) driver;
       wait.until(webDriver -> js.executeScript("return document.readyState").equals("complete"));
 
-      try {
-        WebElement acceptCookiesButton =
-            wait.until(
-                ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("button[data-testid='cookie-banner-accept-all']")));
-        acceptCookiesButton.click();
-      } catch (Exception e) {
+      List<WebElement> cookiesButtons = driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
+      if (!cookiesButtons.isEmpty()) {
+        WebElement acceptCookiesButton = cookiesButtons.getFirst();
+        if (acceptCookiesButton.isDisplayed() && acceptCookiesButton.isEnabled()) {
+          acceptCookiesButton.click();
+        }
       }
 
       WebElement productNameElement =
@@ -83,29 +83,30 @@ public class ProductScraper {
 
     try {
       driver.get(url);
-      try {
-        WebDriverWait waitPopup = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement acceptCookiesButton =
-            waitPopup.until(
-                ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("button[data-testid='cookie-banner-accept-all']")));
-        acceptCookiesButton.click();
-      } catch (Exception e) {
-        //
+
+      WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+      JavascriptExecutor js = (JavascriptExecutor) driver;
+      wait.until(webDriver -> js.executeScript("return document.readyState").equals("complete"));
+
+      List<WebElement> cookiesButtons = driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
+      if (!cookiesButtons.isEmpty()) {
+        WebElement acceptCookiesButton = cookiesButtons.get(0);
+        if (acceptCookiesButton.isDisplayed() && acceptCookiesButton.isEnabled()) {
+          acceptCookiesButton.click();
+        }
       }
 
       WebElement priceSection =
           driver.findElement(By.cssSelector("section.wrapperstyled__PriceWrapper-xngval-3"));
 
-      WebElement priceElement = null;
-      try {
-        priceElement =
-            priceSection.findElement(By.cssSelector("[data-selen='product-discount-price']"));
-      } catch (Exception e) {
-        priceElement = priceSection.findElement(By.cssSelector("[data-selen='product-price']"));
+      WebElement priceElement;
+      List<WebElement> discountPriceElements = priceSection.findElements(By.cssSelector("[data-selen='product-discount-price']"));
+      if (!discountPriceElements.isEmpty()) {
+        priceElement = discountPriceElements.getFirst();
+      } else {
+        priceElement = priceSection.findElement(By.cssSelector("[data-selen='product-price']"));  // Jeśli nie znaleziono ceny zniżkowej, pobierz standardową cenę
       }
 
-      JavascriptExecutor js = (JavascriptExecutor) driver;
       String priceText =
           (String)
               js.executeScript(
