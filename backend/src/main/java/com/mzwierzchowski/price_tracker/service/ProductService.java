@@ -23,13 +23,15 @@ public class ProductService {
         }
 
         String productName = ProductScraper.getProductNameFromUrl(url);
-        if (productName == null) {
-            throw new RuntimeException("Nie udało się pobrać nazwy produktu z podanego URL");
+        Double productPrice = ProductScraper.getProductPriceFromUrl(url);
+        if (productName == null || productPrice ==null) {
+            throw new RuntimeException("Nie udało się pobrać danych produktu z podanego URL");
         }
 
         Product newProduct = new Product();
         newProduct.setName(productName);
         newProduct.setUrl(url);
+        newProduct.setLastPrice(productPrice);
         return productRepository.save(newProduct);
     }
 
@@ -56,4 +58,6 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+
+
 }

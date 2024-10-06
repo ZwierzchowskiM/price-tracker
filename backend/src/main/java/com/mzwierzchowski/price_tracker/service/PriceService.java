@@ -5,6 +5,7 @@ import com.mzwierzchowski.price_tracker.model.Product;
 import com.mzwierzchowski.price_tracker.repository.PriceRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PriceService {
@@ -17,17 +18,23 @@ public class PriceService {
     }
 
 
-    public Price checkAndSavePrice(Product product) {
+    public boolean checkAndSavePrice(Product product) {
         Double currentPriceValue = ProductScraper.getProductPriceFromUrl(product.getUrl());
         if (currentPriceValue != null) {
+            product.setLastPrice(currentPriceValue);
             Price price = new Price();
             price.setProduct(product);
             price.setPriceValue(currentPriceValue);
             price.setDateChecked(LocalDateTime.now());
-            return priceRepository.save(price);
+            priceRepository.save(price);
+            return true;
         } else {
             System.err.println("Cena nie została znaleziona dla produktu: " + product.getName());
-            return null;
+            return false;
         }
+    }
+
+    public List<Price> getPriceHistoryForProduct(Product product) {
+        return priceRepository.findByProduct(product);
     }
 }

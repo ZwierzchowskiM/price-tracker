@@ -12,6 +12,7 @@ public class Product {
     private Long id;
     private String name;
     private String url;
-    @OneToMany(mappedBy = "product")
+    private Double lastPrice;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Price> prices;
 }
