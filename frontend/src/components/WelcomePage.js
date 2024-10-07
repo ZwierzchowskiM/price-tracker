@@ -6,7 +6,7 @@ const LandingPage = () => {
     const navigate = useNavigate();
 
     const handleStartClick = () => {
-        navigate('/main'); // Przekierowanie do g³ównej strony aplikacji
+        navigate('/login'); // Przekierowanie do g³ównej strony aplikacji
     };
 
     return (

@@ -22,8 +22,8 @@ public class UserProductService {
     @Autowired
     private ProductService productService;
 
-    public UserProduct assignProductToUser(Long userId, String productUrl) {
-        User user = userService.getUserById(userId);
+    public UserProduct assignProductToUser(String username, String productUrl) {
+        User user = userService.getUserByUsername(username);
 
         Product product = productService.findOrCreateProductByUrl(productUrl);
 

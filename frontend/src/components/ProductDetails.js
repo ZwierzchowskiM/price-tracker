@@ -7,15 +7,59 @@ const ProductDetails = () => {
     const [priceHistory, setPriceHistory] = useState([]);
 
     const fetchProductDetails = async () => {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
-        const data = await response.json();
-        setProduct(data);
+        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+
+        if (!token) {
+            console.error('Brak tokena. U¿ytkownik nie jest zalogowany.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Do³¹cz token do nag³ówka
+                    'Content-Type': 'application/json',  // Ustaw nag³ówki
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`B³¹d HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setProduct(data);
+        } catch (error) {
+            console.error('B³¹d podczas pobierania szczegó³ów produktu:', error);
+        }
     };
 
     const fetchPriceHistory = async () => {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}/price-history`);
-        const data = await response.json();
-        setPriceHistory(data);
+        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+
+        if (!token) {
+            console.error('Brak tokena. U¿ytkownik nie jest zalogowany.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/products/${productId}/price-history`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Do³¹cz token do nag³ówka
+                    'Content-Type': 'application/json',  // Ustaw nag³ówki
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`B³¹d HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setPriceHistory(data);
+        } catch (error) {
+            console.error('B³¹d podczas pobierania historii cen:', error);
+        }
     };
 
     useEffect(() => {

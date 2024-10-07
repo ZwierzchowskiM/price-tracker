@@ -1,63 +1,62 @@
 package com.mzwierzchowski.price_tracker.service;
 
 import com.mzwierzchowski.price_tracker.model.Product;
+import com.mzwierzchowski.price_tracker.model.User;
 import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.repository.ProductRepository;
 import java.util.List;
+
+import com.mzwierzchowski.price_tracker.repository.UserProductRepository;
+import com.mzwierzchowski.price_tracker.repository.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
 
-    private ProductRepository productRepository;
+  private ProductRepository productRepository;
+  private UserProductRepository userProductRepository;
+  private final UserRepository userRepository;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+  public ProductService(
+      ProductRepository productRepository,
+      UserRepository userRepository,
+      UserProductRepository userProductRepository,
+      UserRepository userRepository1) {
+    this.productRepository = productRepository;
+    this.userProductRepository = userProductRepository;
+    this.userRepository = userRepository1;
+  }
+
+  public Product findOrCreateProductByUrl(String url) {
+    Product existingProduct = productRepository.findByUrl(url);
+    if (existingProduct != null) {
+      return existingProduct;
     }
 
-
-    public Product findOrCreateProductByUrl(String url) {
-        Product existingProduct = productRepository.findByUrl(url);
-        if (existingProduct != null) {
-            return existingProduct;
-        }
-
-        String productName = ProductScraper.getProductNameFromUrl(url);
-        Double productPrice = ProductScraper.getProductPriceFromUrl(url);
-        if (productName == null || productPrice ==null) {
-            throw new RuntimeException("Nie udało się pobrać danych produktu z podanego URL");
-        }
-
-        Product newProduct = new Product();
-        newProduct.setName(productName);
-        newProduct.setUrl(url);
-        newProduct.setLastPrice(productPrice);
-        return productRepository.save(newProduct);
+    String productName = ProductScraper.getProductNameFromUrl(url);
+    Double productPrice = ProductScraper.getProductPriceFromUrl(url);
+    if (productName == null || productPrice == null) {
+      throw new RuntimeException("Nie udało się pobrać danych produktu z podanego URL");
     }
 
-    public Product addProduct(ProductDTO productRequest) {
-        String productName = ProductScraper.getProductNameFromUrl(productRequest.getUrl());
+    Product newProduct = new Product();
+    newProduct.setName(productName);
+    newProduct.setUrl(url);
+    newProduct.setLastPrice(productPrice);
+    return productRepository.save(newProduct);
+  }
 
-        if (productName == null) {
-            throw new RuntimeException("Nie udało się pobrać nazwy produktu z podanego URL");
-        }
+  public List<Product> findProductsForUser(String username) {
+    User user = userRepository.findByUsername(username);
+    return userProductRepository.findProductsByUser(user);
+  }
 
-        Product newProduct = new Product();
-        newProduct.setName(productName);
-        newProduct.setUrl(productRequest.getUrl());
-        productRepository.save(newProduct);
+  public Product getProductById(Long id) {
+    return productRepository.findById(id).orElse(null);
+  }
 
-        return newProduct;
-    }
-
-
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
-    }
-
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-
-
+  public List<Product> getAllProducts() {
+    return productRepository.findAll();
+  }
 }

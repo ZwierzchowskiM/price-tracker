@@ -20,7 +20,7 @@ public class ProductScraper {
     options.addArguments("--headless=new");
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
-    options.addArguments("--disable-dev-shm-usage"); // Poprawa działania w środowiskach o ograniczonej pamięci (np. Docker)
+    options.addArguments("--disable-dev-shm-usage");
 
 
     return new ChromeDriver(options);

@@ -11,6 +11,7 @@ const ProductList = ({ userId }) => {
 
     const fetchProducts = async () => {
         const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+        console.log('Przesyłany token JWT:', token);
 
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
@@ -18,11 +19,11 @@ const ProductList = ({ userId }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/user/${userId}`, {
+            const response = await fetch('http://localhost:8080/api/products/user', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
-                    'Content-Type': 'application/json',  // Ustaw nagłówki
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
 

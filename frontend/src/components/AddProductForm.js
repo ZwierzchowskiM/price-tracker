@@ -3,24 +3,25 @@ import { TextField, Button, Box } from '@mui/material';
 
 const AddProductForm = ({ onProductAdded }) => {
     const [productUrl, setProductUrl] = useState('');
-    const [userId, setUserId] = useState(''); // Pole ID użytkownika
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(`http://localhost:8080/api/products?userId=${userId}`, {
+        const token = localStorage.getItem('token'); // Pobieranie tokenu JWT z localStorage
+
+        const response = await fetch(`http://localhost:8080/api/products/`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,  // Przekazujemy token JWT
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ url: productUrl }),
+            body: JSON.stringify({ url: productUrl }), // Wysyłamy tylko URL produktu
         });
 
         if (response.ok) {
             console.log('Produkt dodany!');
             setProductUrl('');
-            setUserId(''); // Zresetuj pole ID użytkownika po dodaniu produktu
-            onProductAdded(); // Wywołaj funkcję odświeżającą listę produktów
+            onProductAdded();
         } else {
             console.log('Błąd podczas dodawania produktu');
         }
@@ -32,13 +33,6 @@ const AddProductForm = ({ onProductAdded }) => {
             onSubmit={handleSubmit}
             sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: '400px', margin: '0 auto' }}
         >
-            <TextField
-                label="ID użytkownika"
-                variant="outlined"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                required
-            />
             <TextField
                 label="URL produktu"
                 variant="outlined"

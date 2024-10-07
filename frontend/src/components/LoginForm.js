@@ -24,11 +24,13 @@ const LoginForm = ({ onLoginSuccess }) => {
             }
 
             const token = await response.text();
+            console.log('otrzymany token JWT:', token);
             localStorage.setItem('token', token);  // Zapisz token w localStorage
             onLoginSuccess();  // Wywo�anie funkcji po sukcesie logowania
             navigate('/main');  // Przekierowanie po zalogowaniu
         } catch (error) {
             setError('Nieprawid�owe dane logowania');
+            console.log('Error:', error);
         }
     };
 
