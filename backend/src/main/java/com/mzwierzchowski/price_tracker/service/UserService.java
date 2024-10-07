@@ -23,9 +23,8 @@ public class UserService {
 
   public User addUser(UserDTO newUser) {
     User user = new User();
-    user.setUsername(newUser.getUsername());
-    user.setEmail(newUser.getEmail());
-    user.setPassword(passwordEncoder.encode(newUser.getPassword()));  // Szyfrowanie hasła
+    user.setUsername(newUser.getEmail());
+    user.setPassword(passwordEncoder.encode(newUser.getPassword()));
     return userRepository.save(user);
   }
 
@@ -52,14 +51,13 @@ public class UserService {
     }
   }
 
-  public User updateUser(Long id, String username, String email, String password) {
+  public User updateUser(Long id, String username, String password) {
     User user =
         userRepository
             .findById(id)
             .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
 
     user.setUsername(username);
-    user.setEmail(email);
     user.setPassword(password);
 
     return userRepository.save(user);

@@ -20,12 +20,11 @@ public class ProductService {
 
   public ProductService(
       ProductRepository productRepository,
-      UserRepository userRepository,
       UserProductRepository userProductRepository,
-      UserRepository userRepository1) {
+      UserRepository userRepository) {
     this.productRepository = productRepository;
     this.userProductRepository = userProductRepository;
-    this.userRepository = userRepository1;
+    this.userRepository = userRepository;
   }
 
   public Product findOrCreateProductByUrl(String url) {
