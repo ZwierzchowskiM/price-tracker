@@ -6,7 +6,8 @@ import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
 import WelcomePage from './components/WelcomePage';
 import LoginForm from './components/LoginForm';
-import RegisterForm from './components/RegisterForm'; 
+import RegisterForm from './components/RegisterForm';
+import AccountSettings from './components/AccountSettings';  // Import nowego komponentu
 import theme from './theme/theme';
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -32,6 +33,10 @@ function App() {
         navigate('/');
     };
 
+    const handleAccountSettings = () => {
+        navigate('/account');  // Przejście do strony "Moje konto"
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <AppBar position="static">
@@ -40,9 +45,14 @@ function App() {
                         Moje produkty
                     </Typography>
                     {isLoggedIn && (
-                        <Button variant="contained" color="secondary" onClick={handleLogout}>
-                            Wyloguj się
-                        </Button>
+                        <>
+                            <Button variant="contained" color="primary" onClick={handleAccountSettings} sx={{ marginRight: 2 }}>
+                                Moje konto
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={handleLogout}>
+                                Wyloguj się
+                            </Button>
+                        </>
                     )}
                 </Toolbar>
             </AppBar>
@@ -67,9 +77,10 @@ export default function Root() {
             <Routes>
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/main" element={<App />} />
-                <Route path="/login" element={<LoginForm onLoginSuccess={() => { }} />} /> 
-                <Route path="/register" element={<RegisterForm />} /> 
+                <Route path="/login" element={<LoginForm onLoginSuccess={() => { }} />} />
+                <Route path="/register" element={<RegisterForm />} />
                 <Route path="/products/:productId" element={<ProductDetails />} />
+                <Route path="/account" element={<AccountSettings />} />  {/* Nowa trasa */}
             </Routes>
         </Router>
     );

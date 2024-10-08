@@ -1,12 +1,12 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress, Box
 } from '@mui/material';
-
 
 const ProductList = ({ userId }) => {
     const [products, setProducts] = useState([]);
+    const [loadingPrice, setLoadingPrice] = useState(null); // Trzyma stan ładowania dla poszczególnych produktów
     const navigate = useNavigate();
 
     const fetchProducts = async () => {
@@ -27,7 +27,6 @@ const ProductList = ({ userId }) => {
                 },
             });
 
-
             if (!response.ok) {
                 throw new Error(`Błąd HTTP: ${response.status}`);
             }
@@ -39,8 +38,8 @@ const ProductList = ({ userId }) => {
     };
 
     useEffect(() => {
-        fetchProducts(); 
-    }, [userId]); 
+        fetchProducts();
+    }, [userId]);
 
     const handleDelete = async (productId) => {
         const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
@@ -62,6 +61,8 @@ const ProductList = ({ userId }) => {
             return;
         }
 
+        setLoadingPrice(productId); // Ustaw stan ładowania na produkt, który jest aktualizowany
+
         const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
             method: 'GET',
             headers: {
@@ -77,6 +78,8 @@ const ProductList = ({ userId }) => {
         } else {
             console.error('Błąd podczas sprawdzania ceny produktu');
         }
+
+        setLoadingPrice(null); // Resetuj stan ładowania po zakończeniu operacji
     };
 
     const handleDetailsClick = (productId) => {
@@ -86,7 +89,6 @@ const ProductList = ({ userId }) => {
     return (
         <TableContainer component={Paper}>
             <Table>
-        
                 <TableHead>
                     <TableRow>
                         <TableCell>Nazwa produktu</TableCell>
@@ -95,7 +97,7 @@ const ProductList = ({ userId }) => {
                         <TableCell>Akcje</TableCell>
                     </TableRow>
                 </TableHead>
-                    <TableBody>
+                <TableBody>
                     {products.map(product => (
                         <TableRow key={product.id}>
                             <TableCell>{product.name}</TableCell>
@@ -106,17 +108,41 @@ const ProductList = ({ userId }) => {
                             </TableCell>
                             <TableCell>{product.lastPrice} PLN</TableCell>
                             <TableCell>
-                                <button onClick={() => handleCheckPrice(product.id)}>Sprawdź cenę</button>
+                                {loadingPrice === product.id ? (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '36px' }}>
+                                        <CircularProgress size={30} />
+                                    </Box>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleCheckPrice(product.id)}
+                                    >
+                                        Sprawdź cenę
+                                    </Button>
+                                )}
                             </TableCell>
                             <TableCell>
-                                <button onClick={() => handleDetailsClick(product.id)}>Szczegóły</button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handleDetailsClick(product.id)}
+                                >
+                                    Szczegóły
+                                </Button>
                             </TableCell>
                             <TableCell>
-                                <button onClick={() => handleDelete(product.id)}>Usuń</button>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => handleDelete(product.id)}
+                                >
+                                    Usuń
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
-                    </TableBody>
+                </TableBody>
             </Table>
         </TableContainer>
     );

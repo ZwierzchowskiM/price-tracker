@@ -64,9 +64,8 @@ const ProductDetails = () => {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/'); // Przekierowanie do strony głównej po wylogowaniu
+    const handleBack = () => {
+        navigate(-1);  // Powrót do poprzedniej strony
     };
 
     useEffect(() => {
@@ -80,14 +79,14 @@ const ProductDetails = () => {
 
     return (
         <>
-            {/* Pasek nawigacyjny z przyciskiem "Wyloguj się" */}
+            {/* Pasek nawigacyjny z przyciskiem "Wstecz" */}
             <AppBar position="static" sx={{ backgroundColor: '#FFC107' }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1, color: '#000' }}>
                         Szczegóły Produktu
                     </Typography>
-                    <Button variant="contained" color="secondary" onClick={handleLogout}>
-                        Wyloguj się
+                    <Button variant="contained" color="secondary" onClick={handleBack}>
+                        Wstecz
                     </Button>
                 </Toolbar>
             </AppBar>
