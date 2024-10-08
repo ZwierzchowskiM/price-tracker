@@ -112,9 +112,16 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>  <!-- Upewnij się, że jest to odpowiednia wersja -->
-			<scope>provided</scope>  <!-- Ustawione na "provided", ponieważ serwery aplikacyjne dostarczają tę zależność -->
+			<version>4.0.1</version>
+			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.4</version>
+		</dependency>
+
 
 	</dependencies>
 
