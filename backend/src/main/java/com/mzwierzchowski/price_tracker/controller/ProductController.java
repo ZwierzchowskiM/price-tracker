@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000")
-
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ProductController {
 
     private ProductService productService;
@@ -31,9 +31,11 @@ public class ProductController {
         this.userProductService = userProductService;
     }
 
-    @PostMapping
-    public UserProduct addProduct(@RequestParam Long userId, @RequestBody ProductDTO productDto) {
-        return userProductService.assignProductToUser(userId, productDto.getUrl());
+    @PostMapping("/")
+    public ResponseEntity<String> addProduct(@RequestBody ProductDTO productDTO, Authentication authentication) {
+        String username = authentication.getName();
+        userProductService.assignProductToUser(username, productDTO.getUrl());
+        return ResponseEntity.ok("Produkt dodany!");
     }
 
 
@@ -70,6 +72,12 @@ public class ProductController {
         return userProducts.stream()
                 .map(UserProduct::getProduct)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/user")
+    public List<Product> getProductsForCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        return productService.findProductsForUser(username);
     }
 
     @DeleteMapping("/{productId}")

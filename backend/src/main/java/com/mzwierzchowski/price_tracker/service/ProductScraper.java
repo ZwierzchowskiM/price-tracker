@@ -17,10 +17,15 @@ public class ProductScraper {
   public static WebDriver getDriver() {
     WebDriverManager.chromedriver().setup();
     ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless=new");
+    options.setExperimentalOption("detach", false);
+    options.addArguments("--headless=old");
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
-    options.addArguments("--disable-dev-shm-usage"); // Poprawa działania w środowiskach o ograniczonej pamięci (np. Docker)
+    options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--disable-extensions");
+    options.addArguments("--disable-software-rasterizer");
+    options.addArguments("--disable-background-networking");
+
 
 
     return new ChromeDriver(options);
@@ -113,7 +118,7 @@ public class ProductScraper {
                   "var element = arguments[0];"
                       + "var child = element.firstChild;"
                       + "while(child && child.nodeType != 3) {"
-                      + // 3 oznacza węzeł tekstowy
+                      +
                       "    child = child.nextSibling;"
                       + "}"
                       + "return child ? child.nodeValue.trim() : '';",

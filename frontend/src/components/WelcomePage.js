@@ -6,87 +6,116 @@ const LandingPage = () => {
     const navigate = useNavigate();
 
     const handleStartClick = () => {
-        navigate('/main'); // Przekierowanie do g³ównej strony aplikacji
+        navigate('/login'); // Przekierowanie do strony logowania
     };
 
     return (
-        <Container
-            maxWidth="lg"
+        <Box
             sx={{
                 backgroundColor: '#181818',
                 color: '#fff',
                 minHeight: '100vh',
-                padding: '40px 0'
+                padding: '40px 0',
+                width: '100%', // T³o na ca³¹ szerokoœæ ekranu
             }}
         >
-            <Grid container spacing={4} alignItems="center">
-                {/* Lewa kolumna z tekstem i przyciskiem */}
-                <Grid item xs={12} md={6}>
-                    <Box sx={{ textAlign: 'left', ml: 8 }}> {/* Zwiêkszamy margines z lewej strony */}
-                        <Typography variant="h3" fontWeight="bold" gutterBottom color="white">
-                            Price-Tracker
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'left' }}> {/* Wyœrodkowanie przycisku wzglêdem tekstu */}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                onClick={handleStartClick}
-                                sx={{ backgroundColor: '#FFC107', color: '#000', mt: 2 }}  // Dodajemy margines nad przyciskiem
-                            >
-                                START
-                            </Button>
+            <Container maxWidth="lg">
+                <Grid container spacing={4} alignItems="center">
+                    {/* Lewa kolumna z tekstem i przyciskiem */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ textAlign: 'left', ml: 8 }}> {/* Zwiêkszamy margines z lewej strony */}
+                            <Typography variant="h2" fontWeight="bold" gutterBottom color="white">
+                                Price-Tracker
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'left' }}> {/* Wyœrodkowanie przycisku wzglêdem tekstu */}
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    onClick={handleStartClick}
+                                    sx={{ backgroundColor: '#FFC107', color: '#000', mt: 2 }}  // Dodajemy margines nad przyciskiem
+                                >
+                                    START
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
-                </Grid>
+                    </Grid>
 
-                {/* Prawa kolumna z galeri¹ obrazów */}
-                <Grid item xs={12} md={6}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    height: 200,
-                                    backgroundImage: `url('/images/image1.png')`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    height: 200,
-                                    backgroundImage: `url('/images/image2.png')`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    height: 200,
-                                    backgroundImage: `url('/images/image3.png')`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box
-                                sx={{
-                                    height: 200,
-                                    backgroundImage: `url('/images/image4.png')`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                }}
-                            />
+                    {/* Prawa kolumna z galeri¹ obrazów */}
+                    <Grid item xs={12} md={6}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image1.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image2.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image3.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image4.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
+                            {/* Nowe zdjêcia */}
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image5.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Box
+                                    sx={{
+                                        height: 200,
+                                        backgroundImage: `url('/images/image6.png')`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        borderRadius: '16px', // Zaokr¹glenie rogów
+                                    }}
+                                />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </Container>
+            </Container>
+        </Box>
     );
 };
 

@@ -17,8 +17,8 @@ public class UserController {
     this.userService = userService;
   }
 
-  @PostMapping
-  public ResponseEntity<User> addUser(@RequestBody UserDTO user) {
+  @PostMapping("/register")
+  public ResponseEntity<User> registerUser(@RequestBody UserDTO user) {
     User newUser = userService.addUser(user);
     return ResponseEntity.ok(newUser);
   }
@@ -33,14 +33,6 @@ public class UserController {
   public ResponseEntity<List<User>> getAllUsers() {
     List<User> users = userService.getAllUsers();
     return ResponseEntity.ok(users);
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-    User user =
-        userService.updateUser(
-            id, updatedUser.getUsername(), updatedUser.getEmail(), updatedUser.getPassword());
-    return ResponseEntity.ok(user);
   }
 
   @DeleteMapping("/{id}")
