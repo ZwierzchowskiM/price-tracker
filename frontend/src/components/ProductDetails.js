@@ -125,7 +125,7 @@ const ProductDetails = () => {
                                 .sort((a, b) => new Date(b.dateChecked) - new Date(a.dateChecked))  // Sortowanie od najnowszych do najstarszych
                                 .map((price) => (
                                     <TableRow key={price.id}>
-                                        <TableCell>{new Date(price.dateChecked).toLocaleDateString()}</TableCell>
+                                        <TableCell>{new Date(price.dateChecked).toLocaleString()}</TableCell>
                                         <TableCell>{price.priceValue} PLN</TableCell>
                                     </TableRow>
                                 ))}

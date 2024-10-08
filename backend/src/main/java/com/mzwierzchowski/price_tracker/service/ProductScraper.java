@@ -118,7 +118,7 @@ public class ProductScraper {
                   "var element = arguments[0];"
                       + "var child = element.firstChild;"
                       + "while(child && child.nodeType != 3) {"
-                      + // 3 oznacza węzeł tekstowy
+                      +
                       "    child = child.nextSibling;"
                       + "}"
                       + "return child ? child.nodeValue.trim() : '';",
