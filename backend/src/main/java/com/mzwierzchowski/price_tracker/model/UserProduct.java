@@ -20,4 +20,8 @@ public class UserProduct {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    private  Double notificationPrice;
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
 }

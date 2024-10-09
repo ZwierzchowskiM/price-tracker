@@ -51,6 +51,8 @@ public class ProductService {
     return userProductRepository.findProductsByUser(user);
   }
 
+
+
   public Product getProductById(Long id) {
     return productRepository.findById(id).orElse(null);
   }
