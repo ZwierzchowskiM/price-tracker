@@ -1,4 +1,0 @@
-build:
-  languages:
-    java:
-      app-dir: backend

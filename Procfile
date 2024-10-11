@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar backend/target/*.jar
+web: cd backend && java -Dserver.port=$PORT -jar target/price-tracker-0.0.1-SNAPSHOT.jar
