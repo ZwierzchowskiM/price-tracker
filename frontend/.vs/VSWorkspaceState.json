@@ -3,7 +3,8 @@
     "",
     "\\public",
     "\\src",
-    "\\src\\components"
+    "\\src\\components",
+    "\\src\\theme"
   ],
   "SelectedNode": "\\src\\components\\ProductDetails.js",
   "PreviewInSolutionExplorer": false

@@ -21,15 +21,12 @@ import java.util.UUID;
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final GoogleOAuth2Service googleOAuth2Service;
 
-    @Autowired
-    private GoogleOAuth2Service googleOAuth2Service;
-
-    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
-        this.mailSender = mailSender;
+    public EmailService( TemplateEngine templateEngine, GoogleOAuth2Service googleOAuth2Service) {
         this.templateEngine = templateEngine;
+        this.googleOAuth2Service = googleOAuth2Service;
     }
 
     public void sendPriceNotification(String to, String subject, Map<String, Object> model) throws Exception {
