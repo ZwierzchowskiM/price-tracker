@@ -2,14 +2,19 @@ package com.mzwierzchowski.price_tracker.controller;
 
 import com.mzwierzchowski.price_tracker.model.Price;
 import com.mzwierzchowski.price_tracker.model.Product;
+import com.mzwierzchowski.price_tracker.model.User;
 import com.mzwierzchowski.price_tracker.model.UserProduct;
 import com.mzwierzchowski.price_tracker.model.dtos.NotificationRequestDTO;
 import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
-import com.mzwierzchowski.price_tracker.service.PriceService;
-import com.mzwierzchowski.price_tracker.service.ProductService;
-import com.mzwierzchowski.price_tracker.service.UserProductService;
+import com.mzwierzchowski.price_tracker.service.*;
+
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,29 +28,34 @@ public class ProductController {
   private ProductService productService;
   private PriceService priceService;
   private UserProductService userProductService;
+  private UserService userService;
 
   public ProductController(
-      ProductService productService,
-      PriceService priceService,
-      UserProductService userProductService) {
+          ProductService productService,
+          PriceService priceService,
+          UserProductService userProductService,
+          UserService userService) {
     this.productService = productService;
     this.priceService = priceService;
     this.userProductService = userProductService;
+    this.userService = userService;
   }
 
   @PostMapping("/")
   public ResponseEntity<String> addProduct(
-      @RequestBody ProductDTO productDTO, Authentication authentication) {
+          @RequestBody ProductDTO productDTO, Authentication authentication) {
     String username = authentication.getName();
     userProductService.assignProductToUser(username, productDTO);
     return ResponseEntity.ok("Produkt dodany!");
   }
 
   @GetMapping("/{productId}/check-price")
-  public ResponseEntity<?> checkPrice(@PathVariable Long productId) {
-    Product product = productService.getProductById(productId);
+  public ResponseEntity<?> checkPrice(@PathVariable Long productId, Authentication authentication) {
 
-    boolean updated = priceService.checkAndSavePrice(product);
+    User user = userService.getUserByUsername(authentication.getName());
+    UserProduct userProduct =
+            userProductService.getUserProductByUserIdAndProductId(user.getId(), productId);
+    boolean updated = priceService.checkAndSavePrice(userProduct);
     if (updated) {
       return ResponseEntity.ok().build();
     } else {
@@ -81,8 +91,11 @@ public class ProductController {
   }
 
   @DeleteMapping("/{productId}")
-  public ResponseEntity<?> deleteProduct(@PathVariable Long productId, @RequestParam Long userId) {
-    boolean deleted = userProductService.removeProductFromUser(userId, productId);
+  public ResponseEntity<?> deleteProduct(
+          @PathVariable Long productId, Authentication authentication) {
+
+    User user = userService.getUserByUsername(authentication.getName());
+    boolean deleted = userProductService.removeProductFromUser(user.getId(), productId);
     if (deleted) {
       return ResponseEntity.ok().build();
     } else {
@@ -102,19 +115,22 @@ public class ProductController {
   }
 
   @GetMapping("/{productId}/user-product")
-  public ResponseEntity<UserProduct> getUserProduct(
-      @PathVariable Long productId, Authentication authentication) {
+  public ResponseEntity<UserProduct> getUserProductDetails(
+          @PathVariable Long productId, Authentication authentication) {
     String username = authentication.getName();
-    UserProduct userProduct =
-        userProductService.getUserProductByUserIdAndProductId(productId, username);
-    return ResponseEntity.ok(userProduct);
+
+    User user = userService.getUserByUsername(username);
+
+    UserProduct userProductDetails =
+            userProductService.getUserProductByUserIdAndProductId(user.getId(), productId);
+    return ResponseEntity.ok(userProductDetails);
   }
 
   @PostMapping("/{productId}/set-notification")
   public ResponseEntity<?> setProductNotification(
-      @PathVariable Long productId,
-      @RequestBody NotificationRequestDTO notificationRequest,
-      Authentication authentication) {
+          @PathVariable Long productId,
+          @RequestBody NotificationRequestDTO notificationRequest,
+          Authentication authentication) {
     String username = authentication.getName();
 
     try {
@@ -122,7 +138,7 @@ public class ProductController {
       return ResponseEntity.ok("Ustawienia powiadomienia zostały zapisane.");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Błąd podczas zapisywania powiadomienia.");
+              .body("Błąd podczas zapisywania powiadomienia.");
     }
   }
 }

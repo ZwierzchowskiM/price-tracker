@@ -1,0 +1,20 @@
+package com.mzwierzchowski.price_tracker.service;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import jakarta.mail.Authenticator;
+import jakarta.mail.PasswordAuthentication;
+
+public class OAuth2Authenticator extends Authenticator {
+
+    private final Credential credential;
+
+    public OAuth2Authenticator(Credential credential) {
+        this.credential = credential;
+    }
+
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication("", credential.getAccessToken());
+    }
+}

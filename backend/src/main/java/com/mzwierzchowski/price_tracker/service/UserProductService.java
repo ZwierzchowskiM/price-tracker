@@ -9,8 +9,11 @@ import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.repository.UserProductRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 public class UserProductService {
 
@@ -54,10 +57,14 @@ public class UserProductService {
     return userProductRepository.findByUserId(userId);
   }
 
-  public UserProduct getUserProductByUserIdAndProductId(Long productId, String username) {
+  public UserProduct getUserProductByUserIdAndProductId(Long userId, Long productId) {
 
-    User user = userService.getUserByUsername(username);
-    return userProductRepository.findByUserIdAndProductId(user.getId(), productId);
+    return userProductRepository.findByUserIdAndProductId(userId, productId);
+  }
+
+  public List<UserProduct> getUserProducts() {
+
+    return userProductRepository.findAll();
   }
 
   public void setNotificationForProduct(

@@ -42,8 +42,20 @@ const ProductList = ({ userId }) => {
     }, [userId]);
 
     const handleDelete = async (productId) => {
+        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+        console.log('Przesyłany token JWT:', token);
+
+        if (!token) {
+            console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            return;  // Zatrzymaj, jeśli nie ma tokena
+        }
+
         const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
             method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
 
         if (response.ok) {
@@ -61,8 +73,10 @@ const ProductList = ({ userId }) => {
             return;
         }
 
+
         setLoadingPrice(productId); // Ustaw stan ładowania na produkt, który jest aktualizowany
 
+        // Nowy endpoint z userId i productId
         const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
             method: 'GET',
             headers: {
@@ -72,8 +86,7 @@ const ProductList = ({ userId }) => {
         });
 
         if (response.ok) {
-            console.log(`Cena dla produktu o ID ${productId} została zaktualizowana.`);
-            // Opcjonalnie: możesz odświeżyć listę produktów, aby pokazać nową cenę
+            console.log(`Cena dla produktu o ID ${productId} i została zaktualizowana.`);
             fetchProducts(); // Odświeżenie listy po sprawdzeniu ceny
         } else {
             console.error('Błąd podczas sprawdzania ceny produktu');

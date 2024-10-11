@@ -6,9 +6,11 @@ import com.mzwierzchowski.price_tracker.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 public class UserService {
 

@@ -179,7 +179,7 @@ const ProductDetails = () => {
                     </Typography>
                 </Box>
 
-                {/* Ustawienia powiadomień */}
+                {}
                 <Box sx={{ marginTop: 4 }}>
                     <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
                         <InputLabel id="notification-select-label">Warunek powiadomienia</InputLabel>
