@@ -1,9 +1,11 @@
 import React from 'react';
 import { Button, Container, Typography, Box, Grid } from '@mui/material';
+import { useTheme } from '@mui/material/styles'; // Importuj useTheme
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const theme = useTheme(); // Pobierz globalny temat
 
     const handleStartClick = () => {
         navigate('/login'); // Przekierowanie do strony logowania
@@ -12,8 +14,8 @@ const LandingPage = () => {
     return (
         <Box
             sx={{
-                backgroundColor: '#181818',
-                color: '#fff',
+                backgroundColor: theme.palette.background.default, // U¿yj globalnego koloru t³a
+                color: theme.palette.text.primary, // U¿yj globalnego koloru tekstu
                 minHeight: '100vh',
                 padding: '40px 0',
                 width: '100%', // T³o na ca³¹ szerokoœæ ekranu
@@ -24,16 +26,16 @@ const LandingPage = () => {
                     {/* Lewa kolumna z tekstem i przyciskiem */}
                     <Grid item xs={12} md={6}>
                         <Box sx={{ textAlign: 'left', ml: 8 }}> {/* Zwiêkszamy margines z lewej strony */}
-                            <Typography variant="h2" fontWeight="bold" gutterBottom color="white">
+                            <Typography variant="h2" fontWeight="bold" gutterBottom color={theme.palette.text.primary}>
                                 Price-Tracker
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'left' }}> {/* Wyœrodkowanie przycisku wzglêdem tekstu */}
                                 <Button
                                     variant="contained"
-                                    color="primary"
+                                    color="primary" // U¿yj koloru primary z palety
                                     size="large"
                                     onClick={handleStartClick}
-                                    sx={{ backgroundColor: '#FFC107', color: '#000', mt: 2 }}  // Dodajemy margines nad przyciskiem
+                                    sx={{ mt: 2 }}
                                 >
                                     START
                                 </Button>

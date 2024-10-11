@@ -152,9 +152,9 @@ const ProductDetails = () => {
 
     return (
         <>
-            <AppBar position="static" sx={{ backgroundColor: '#FFC107' }}>
+            <AppBar position="static" color="primary">  {/* Użycie koloru primary z motywu */}
                 <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1, color: '#000' }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Szczegóły Produktu
                     </Typography>
                     <Button variant="contained" color="secondary" onClick={handleBack}>

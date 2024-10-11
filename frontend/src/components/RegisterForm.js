@@ -3,14 +3,23 @@ import { TextField, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    // Wyrażenie regularne do sprawdzania poprawności adresu e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Sprawdzenie, czy e-mail ma poprawny format
+        if (!emailRegex.test(email)) {
+            setError('Podaj poprawny adres e-mail');
+            return;
+        }
 
         if (password !== confirmPassword) {
             setError('Hasła nie są zgodne');
@@ -23,15 +32,15 @@ const RegisterForm = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
-                throw new Error('B�Błądd podczas rejestracji');
+                throw new Error('Błąd podczas rejestracji');
             }
 
             console.log('Rejestracja zakończona sukcesem');
-            navigate('/login'); 
+            navigate('/login');
         } catch (error) {
             setError('Błąd podczas rejestracji');
             console.log('Error:', error);
@@ -43,10 +52,11 @@ const RegisterForm = () => {
             <TextField
                 label="Email"
                 variant="outlined"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 sx={{ marginBottom: 2, maxWidth: '400px', width: '100%' }}
+                type="email"
             />
             <TextField
                 label="Hasło"

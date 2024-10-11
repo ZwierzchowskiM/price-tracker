@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress, Box
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles'; // Pobierz temat
 
 const ProductList = ({ userId }) => {
     const [products, setProducts] = useState([]);
-    const [loadingPrice, setLoadingPrice] = useState(null); // Trzyma stan ładowania dla poszczególnych produktów
+    const [loadingPrice, setLoadingPrice] = useState(null);
     const navigate = useNavigate();
+    const theme = useTheme(); // Użyj tematu
 
     const fetchProducts = async () => {
-        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
-        console.log('Przesyłany token JWT:', token);
-
+        const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
-            return;  // Zatrzymaj, jeśli nie ma tokena
+            return;
         }
 
         try {
@@ -42,12 +42,10 @@ const ProductList = ({ userId }) => {
     }, [userId]);
 
     const handleDelete = async (productId) => {
-        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
-        console.log('Przesyłany token JWT:', token);
-
+        const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
-            return;  // Zatrzymaj, jeśli nie ma tokena
+            return;
         }
 
         const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
@@ -59,7 +57,6 @@ const ProductList = ({ userId }) => {
         });
 
         if (response.ok) {
-            // Usuń produkt z listy po jego usunięciu z serwera
             setProducts(products.filter(product => product.id !== productId));
         } else {
             console.error('Błąd podczas usuwania produktu');
@@ -67,36 +64,34 @@ const ProductList = ({ userId }) => {
     };
 
     const handleCheckPrice = async (productId) => {
-        const token = localStorage.getItem('token');  // Pobierz token JWT z localStorage
+        const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
             return;
         }
 
+        setLoadingPrice(productId);
 
-        setLoadingPrice(productId); // Ustaw stan ładowania na produkt, który jest aktualizowany
-
-        // Nowy endpoint z userId i productId
         const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
 
         if (response.ok) {
             console.log(`Cena dla produktu o ID ${productId} i została zaktualizowana.`);
-            fetchProducts(); // Odświeżenie listy po sprawdzeniu ceny
+            fetchProducts();
         } else {
             console.error('Błąd podczas sprawdzania ceny produktu');
         }
 
-        setLoadingPrice(null); // Resetuj stan ładowania po zakończeniu operacji
+        setLoadingPrice(null);
     };
 
     const handleDetailsClick = (productId) => {
-        navigate(`/products/${productId}`); // Przenosi na stronę szczegółów produktu
+        navigate(`/products/${productId}`);
     };
 
     return (
@@ -128,7 +123,7 @@ const ProductList = ({ userId }) => {
                                 ) : (
                                     <Button
                                         variant="contained"
-                                        color="primary"
+                                        color="primary" // Użycie koloru primary z motywu
                                         onClick={() => handleCheckPrice(product.id)}
                                     >
                                         Sprawdź cenę
@@ -138,7 +133,7 @@ const ProductList = ({ userId }) => {
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="secondary"
+                                    color="secondary" // Użycie koloru secondary z motywu
                                     onClick={() => handleDetailsClick(product.id)}
                                 >
                                     Szczegóły
@@ -147,7 +142,7 @@ const ProductList = ({ userId }) => {
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="error"
+                                    color="error" // Użycie koloru error z motywu
                                     onClick={() => handleDelete(product.id)}
                                 >
                                     Usuń
