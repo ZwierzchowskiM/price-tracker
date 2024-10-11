@@ -22,17 +22,18 @@ public class UserProductService {
   private ProductService productService;
 
   public UserProductService(
-      UserProductRepository userProductRepository,
-      UserService userService,
-      ProductService productService) {
+          UserProductRepository userProductRepository,
+          UserService userService,
+          ProductService productService) {
     this.userProductRepository = userProductRepository;
     this.userService = userService;
     this.productService = productService;
   }
 
   public UserProduct assignProductToUser(String username, ProductDTO productDTO) {
-    User user = userService.getUserByUsername(username);
+    log.info("Assigning product with URL {} to user {}", productDTO.getUrl(), username);
 
+    User user = userService.getUserByUsername(username);
     Product product = productService.findOrCreateProductByUrl(productDTO.getUrl());
 
     UserProduct userProduct = new UserProduct();
@@ -41,45 +42,73 @@ public class UserProductService {
     userProduct.setDateAdded(LocalDateTime.now());
     userProduct.setNotificationType(NotificationType.BELOW_LAST_PRICE);
 
-    return userProductRepository.save(userProduct);
+    UserProduct savedUserProduct = userProductRepository.save(userProduct);
+    log.info("Product assigned to user {} with product ID {} and userProduct ID {}",
+            username, product.getId(), savedUserProduct.getId());
+
+    return savedUserProduct;
   }
 
   public boolean removeProductFromUser(Long userId, Long productId) {
+    log.info("Removing product with ID {} from user with ID {}", productId, userId);
     UserProduct userProduct = userProductRepository.findByUserIdAndProductId(userId, productId);
     if (userProduct != null) {
       userProductRepository.delete(userProduct);
+      log.info("Product with ID {} successfully removed from user with ID {}", productId, userId);
       return true;
     }
+    log.warn("UserProduct not found for user ID {} and product ID {}", userId, productId);
     return false;
   }
 
   public List<UserProduct> getUserProductsByUserId(Long userId) {
-    return userProductRepository.findByUserId(userId);
+    log.info("Fetching all products assigned to user with ID {}", userId);
+    List<UserProduct> userProducts = userProductRepository.findByUserId(userId);
+    log.info("Found {} products for user with ID {}", userProducts.size(), userId);
+    return userProducts;
   }
 
   public UserProduct getUserProductByUserIdAndProductId(Long userId, Long productId) {
-
-    return userProductRepository.findByUserIdAndProductId(userId, productId);
+    log.info("Fetching UserProduct for user ID {} and product ID {}", userId, productId);
+    UserProduct userProduct = userProductRepository.findByUserIdAndProductId(userId, productId);
+    if (userProduct == null) {
+      log.warn("UserProduct not found for user ID {} and product ID {}", userId, productId);
+    }
+    return userProduct;
   }
 
   public List<UserProduct> getUserProducts() {
-
-    return userProductRepository.findAll();
+    log.info("Fetching all user products from database");
+    List<UserProduct> userProducts = userProductRepository.findAll();
+    log.info("Total user products found: {}", userProducts.size());
+    return userProducts;
   }
 
   public void setNotificationForProduct(
-      Long productId, String username, NotificationRequestDTO notificationRequest) {
+          Long productId, String username, NotificationRequestDTO notificationRequest) {
+    log.info("Setting notification for product ID {} and user {}", productId, username);
+
     User user = userService.getUserByUsername(username);
     UserProduct userProduct =
-        userProductRepository.findByUserIdAndProductId(user.getId(), productId);
+            userProductRepository.findByUserIdAndProductId(user.getId(), productId);
+
+    if (userProduct == null) {
+      log.error("UserProduct not found for user {} and product ID {}", username, productId);
+      throw new RuntimeException("UserProduct not found for user " + username + " and product ID " + productId);
+    }
+
     userProduct.setNotificationType(notificationRequest.getNotificationType());
+    log.info("Notification type set to {} for product ID {}", notificationRequest.getNotificationType(), productId);
 
     if (NotificationType.BELOW_THRESHOLD.equals(notificationRequest.getNotificationType())) {
       userProduct.setNotificationPrice(notificationRequest.getNotificationPrice());
+      log.info("Notification price set to {} for product ID {}", notificationRequest.getNotificationPrice(), productId);
     } else {
       userProduct.setNotificationPrice(null);
+      log.info("Notification price reset for product ID {}", productId);
     }
 
     userProductRepository.save(userProduct);
+    log.info("Notification settings saved for user {} and product ID {}", username, productId);
   }
 }

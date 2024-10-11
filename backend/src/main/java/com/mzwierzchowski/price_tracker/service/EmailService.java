@@ -1,6 +1,5 @@
 package com.mzwierzchowski.price_tracker.service;
 
-
 import com.google.api.client.auth.oauth2.Credential;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
@@ -14,50 +13,37 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
-import java.io.IOException;
 import java.util.Map;
-
+import java.util.Properties;
+import java.util.UUID;
 
 @Log4j2
 @Service
 public class EmailService {
 
-
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-
     @Autowired
     private GoogleOAuth2Service googleOAuth2Service;
-
 
     public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
     }
 
-
     public void sendPriceNotification(String to, String subject, Map<String, Object> model) throws Exception {
         String email = "pricetrakcer.alerts@gmail.com";
-        Credential credential = googleOAuth2Service.getCredentials();
+        log.info("Attempting to send price notification email to: {}", to);
 
+        Credential credential = googleOAuth2Service.getCredentials();
         if (!credential.refreshToken()) {
+            log.error("Failed to refresh access token for email: {}", email);
             throw new RuntimeException("Failed to refresh access token");
         }
 
         String accessToken = credential.getAccessToken();
+        log.info("Successfully refreshed access token for email: {}", email);
 
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
@@ -67,7 +53,8 @@ public class EmailService {
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
-        props.put("mail.debug", "true");
+
+        log.info("SMTP properties set, preparing email session");
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -75,18 +62,26 @@ public class EmailService {
                 return new PasswordAuthentication(email, accessToken);
             }
         });
-        MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(email));
-        message.setSubject(subject);
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
-        message.setHeader("X-Entity-ID", UUID.randomUUID().toString());
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(email));
+            message.setSubject(subject);
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setHeader("X-Entity-ID", UUID.randomUUID().toString());
 
-        Context context = new Context();
-        context.setVariables(model);
-        String htmlContent = templateEngine.process("email-template", context);
-        message.setContent(htmlContent, "text/html; charset=utf-8");
+            Context context = new Context();
+            context.setVariables(model);
+            String htmlContent = templateEngine.process("email-template", context);
+            message.setContent(htmlContent, "text/html; charset=utf-8");
 
-        Transport.send(message);
+            log.info("Email prepared with subject: {} for recipient: {}", subject, to);
+            Transport.send(message);
+            log.info("Email successfully sent to: {}", to);
+
+        } catch (MessagingException e) {
+            log.error("Failed to send email to: {}", to, e);
+            throw e;
+        }
     }
 }

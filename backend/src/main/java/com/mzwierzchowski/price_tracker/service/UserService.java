@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-  
   private UserRepository userRepository;
   private PasswordEncoder passwordEncoder;
 
@@ -24,44 +23,72 @@ public class UserService {
   }
 
   public User addUser(UserDTO newUser) {
+    log.info("Adding new user with email: {}", newUser.getEmail());
     User user = new User();
-    user.setUsername(newUser.getUsername());
+    user.setUsername(newUser.getEmail());
     user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-    return userRepository.save(user);
+
+    User savedUser = userRepository.save(user);
+    log.info("User with email {} successfully added with ID: {}", newUser.getEmail(), savedUser.getId());
+
+    return savedUser;
   }
 
   public User getUserById(Long id) {
+    log.info("Fetching user with ID: {}", id);
     return userRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+            .findById(id)
+            .orElseThrow(() -> {
+              log.error("User not found with ID: {}", id);
+              return new RuntimeException("User not found with ID: " + id);
+            });
   }
 
   public User getUserByUsername(String username) {
-    return userRepository.findByUsername(username);
+    log.info("Fetching user with username: {}", username);
+    User user = userRepository.findByUsername(username);
+    if (user == null) {
+      log.warn("User with username {} not found", username);
+    } else {
+      log.info("User with username {} found", username);
+    }
+    return user;
   }
 
   public List<User> getAllUsers() {
-    return userRepository.findAll();
+    log.info("Fetching all users");
+    List<User> users = userRepository.findAll();
+    log.info("Total users found: {}", users.size());
+    return users;
   }
 
   public void deleteUser(Long id) {
+    log.info("Attempting to delete user with ID: {}", id);
     Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {
       userRepository.delete(user.get());
+      log.info("User with ID {} successfully deleted", id);
     } else {
+      log.error("User not found with ID: {}", id);
       throw new RuntimeException("User not found with ID: " + id);
     }
   }
 
   public User updateUser(Long id, String username, String password) {
-    User user =
-        userRepository
+    log.info("Attempting to update user with ID: {}", id);
+    User user = userRepository
             .findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+            .orElseThrow(() -> {
+              log.error("User not found with ID: {}", id);
+              return new RuntimeException("User not found with ID: " + id);
+            });
 
+    log.info("Updating user with ID {}: new username = {}, new password = [PROTECTED]", id, username);
     user.setUsername(username);
-    user.setPassword(password);
+    user.setPassword(passwordEncoder.encode(password));
 
-    return userRepository.save(user);
+    User updatedUser = userRepository.save(user);
+    log.info("User with ID {} successfully updated", id);
+    return updatedUser;
   }
 }

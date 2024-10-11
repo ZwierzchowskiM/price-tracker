@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.mail.MessagingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,10 +20,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PriceService {
 
-  private PriceRepository priceRepository;
-  private ProductService productService;
-  private UserProductService userProductService;
-  private EmailService emailService;
+  private final PriceRepository priceRepository;
+  private final ProductService productService;
+  private final UserProductService userProductService;
+  private final EmailService emailService;
 
   public PriceService(
           PriceRepository priceRepository,
@@ -38,10 +37,14 @@ public class PriceService {
   }
 
   public boolean checkAndSavePrice(UserProduct userProduct) {
-
     Product product = userProduct.getProduct();
+    log.info("Checking price for product: {}", product.getName());
+
     Double currentPriceValue = ProductScraper.getProductPriceFromUrl(product.getUrl());
+
     if (currentPriceValue != null) {
+      log.info("Price found for product {}: {} PLN", product.getName(), currentPriceValue);
+
       product.setLastPrice(currentPriceValue);
       Price price = new Price();
       price.setProduct(product);
@@ -51,20 +54,24 @@ public class PriceService {
 
       if (userProduct.getNotificationType() == NotificationType.BELOW_LAST_PRICE
               && currentPriceValue < product.getLastPrice()) {
+        log.info("Price drop detected for product {} below last price", product.getName());
         sendPriceDropNotification(userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
       } else if (userProduct.getNotificationType() == NotificationType.BELOW_THRESHOLD
               && currentPriceValue < userProduct.getNotificationPrice()) {
+        log.info("Price drop detected for product {} below threshold: {} PLN", product.getName(), userProduct.getNotificationPrice());
         sendPriceDropNotification(userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
       }
 
       return true;
     } else {
-      System.err.println("Cena nie została znaleziona dla produktu: " + product.getName());
+      log.error("Price not found for product: {}", product.getName());
       return false;
     }
   }
 
   public void sendPriceDropNotification(String userEmail, Product product, double newPrice) {
+    log.info("Sending price drop notification for product: {} to user: {}", product.getName(), userEmail);
+
     Map<String, Object> model = new HashMap<>();
     model.put("productName", product.getName());
     model.put("newPrice", newPrice);
@@ -74,21 +81,33 @@ public class PriceService {
 
     try {
       emailService.sendPriceNotification(userEmail, subject, model);
+      log.info("Notification sent to {} for product {} with new price {}", userEmail, product.getName(), newPrice);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Failed to send price drop notification for product {} to user {}", product.getName(), userEmail, e);
     }
   }
 
-  //    @Scheduled(cron = "0 0 6,18 * * *")
-  @Scheduled(cron = "0 */10 * * * *")
+  @Scheduled(cron = "0 0 * * * *") // Co 1 godzinę
   public void checkPricesForAllProducts() {
+    log.info("Starting scheduled price check for all products");
+
     List<UserProduct> allUserProducts = userProductService.getUserProducts();
     for (UserProduct userProduct : allUserProducts) {
-      checkAndSavePrice(userProduct);
+      boolean success = checkAndSavePrice(userProduct);
+      if (success) {
+        log.info("Price check successful for product {}", userProduct.getProduct().getName());
+      } else {
+        log.warn("Price check failed for product {}", userProduct.getProduct().getName());
+      }
     }
+
+    log.info("Scheduled price check completed");
   }
 
   public List<Price> getPriceHistoryForProduct(Product product) {
-    return priceRepository.findByProduct(product);
+    log.info("Fetching price history for product: {}", product.getName());
+    List<Price> priceHistory = priceRepository.findByProduct(product);
+    log.info("Found {} price records for product {}", priceHistory.size(), product.getName());
+    return priceHistory;
   }
 }
