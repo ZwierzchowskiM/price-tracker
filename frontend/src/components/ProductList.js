@@ -13,8 +13,10 @@ const ProductList = ({ userId }) => {
 
     const fetchProducts = async () => {
         const token = localStorage.getItem('token');
+
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            navigate('/login');  // Przekieruj na stronę logowania, jeśli brak tokena
             return;
         }
 
@@ -27,15 +29,31 @@ const ProductList = ({ userId }) => {
                 },
             });
 
+            // Sprawdzenie błędów uwierzytelniania (401/403)
+            if (response.status === 401 || response.status === 403) {
+                console.error('Nieautoryzowany dostęp. Użytkownik musi się zalogować ponownie.');
+                localStorage.removeItem('token');  // Usuń nieważny token
+                navigate('/login');  // Przekierowanie na stronę logowania
+                return;
+            }
+
+            // Sprawdzenie innych błędów
             if (!response.ok) {
                 throw new Error(`Błąd HTTP: ${response.status}`);
             }
+
+            // Przetwarzanie poprawnej odpowiedzi
             const data = await response.json();
             setProducts(data);
+
         } catch (error) {
             console.error('Błąd podczas pobierania produktów:', error);
+            localStorage.removeItem('token');  // Usuń nieważny token
+            navigate('/welocme');  // Przekierowanie na stronę logowania
+            return;
         }
     };
+
 
     useEffect(() => {
         fetchProducts();
@@ -45,6 +63,7 @@ const ProductList = ({ userId }) => {
         const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            navigate('/login');  // Przekieruj na stronę logowania, jeśli brak tokena
             return;
         }
 
@@ -55,6 +74,12 @@ const ProductList = ({ userId }) => {
                 'Content-Type': 'application/json',
             },
         });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem('token');
+            navigate('/login'); // Przekierowanie w przypadku błędu uwierzytelnienia
+            return;
+        }
 
         if (response.ok) {
             setProducts(products.filter(product => product.id !== productId));
@@ -67,6 +92,7 @@ const ProductList = ({ userId }) => {
         const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
+            navigate('/login');  // Przekieruj na stronę logowania, jeśli brak tokena
             return;
         }
 
@@ -80,11 +106,18 @@ const ProductList = ({ userId }) => {
             },
         });
 
+        if (response.status === 401 || response.status === 403 || !response.ok) {
+            localStorage.removeItem('token');
+            navigate('/login'); // Przekierowanie w przypadku błędu uwierzytelnienia
+            console.log ('Tutaj powinno zadziałac przekierowanie');
+            return;
+        }
+
         if (response.ok) {
             console.log(`Cena dla produktu o ID ${productId} i została zaktualizowana.`);
             fetchProducts();
         } else {
-            console.error('Błąd podczas sprawdzania ceny produktu');
+           console.error('Błąd podczas sprawdzania ceny produktu');
         }
 
         setLoadingPrice(null);
@@ -123,7 +156,7 @@ const ProductList = ({ userId }) => {
                                 ) : (
                                     <Button
                                         variant="contained"
-                                        color="primary" // Użycie koloru primary z motywu
+                                        color="primary"
                                         onClick={() => handleCheckPrice(product.id)}
                                     >
                                         Sprawdź cenę
@@ -133,7 +166,7 @@ const ProductList = ({ userId }) => {
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="secondary" // Użycie koloru secondary z motywu
+                                    color="secondary"
                                     onClick={() => handleDetailsClick(product.id)}
                                 >
                                     Szczegóły
@@ -142,7 +175,7 @@ const ProductList = ({ userId }) => {
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="error" // Użycie koloru error z motywu
+                                    color="error"
                                     onClick={() => handleDelete(product.id)}
                                 >
                                     Usuń
