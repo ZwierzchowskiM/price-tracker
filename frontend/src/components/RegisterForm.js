@@ -47,6 +47,11 @@ const RegisterForm = () => {
         }
     };
 
+    // Funkcja do obsługi przycisku "Wstecz"
+    const handleBack = () => {
+        navigate(-1); // Cofnięcie do poprzedniej strony
+    };
+
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <TextField
@@ -84,6 +89,15 @@ const RegisterForm = () => {
                 sx={{ maxWidth: '400px', width: '100%' }}
             >
                 Zarejestruj się
+            </Button>
+            {/* Dodajemy przycisk Wstecz */}
+            <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleBack}
+                sx={{ mt: 2, maxWidth: '400px', width: '100%' }}
+            >
+                Wstecz
             </Button>
         </Box>
     );

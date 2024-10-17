@@ -1,1 +1,0 @@
-web: java -Dserver.port=$PORT -jar backend/target/price-tracker-0.0.1-SNAPSHOT.jar
