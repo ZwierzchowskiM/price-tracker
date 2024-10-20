@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
 
-  private ProductRepository productRepository;
-  private UserProductRepository userProductRepository;
+  private final ProductRepository productRepository;
+  private final UserProductRepository userProductRepository;
   private final UserRepository userRepository;
 
   public ProductService(

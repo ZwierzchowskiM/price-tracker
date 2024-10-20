@@ -9,7 +9,6 @@ import com.mzwierzchowski.price_tracker.model.dtos.ProductDTO;
 import com.mzwierzchowski.price_tracker.repository.UserProductRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +21,9 @@ public class UserProductService {
   private ProductService productService;
 
   public UserProductService(
-          UserProductRepository userProductRepository,
-          UserService userService,
-          ProductService productService) {
+      UserProductRepository userProductRepository,
+      UserService userService,
+      ProductService productService) {
     this.userProductRepository = userProductRepository;
     this.userService = userService;
     this.productService = productService;
@@ -43,8 +42,11 @@ public class UserProductService {
     userProduct.setNotificationType(NotificationType.BELOW_LAST_PRICE);
 
     UserProduct savedUserProduct = userProductRepository.save(userProduct);
-    log.info("Product assigned to user {} with product ID {} and userProduct ID {}",
-            username, product.getId(), savedUserProduct.getId());
+    log.info(
+        "Product assigned to user {} with product ID {} and userProduct ID {}",
+        username,
+        product.getId(),
+        savedUserProduct.getId());
 
     return savedUserProduct;
   }
@@ -85,24 +87,31 @@ public class UserProductService {
   }
 
   public void setNotificationForProduct(
-          Long productId, String username, NotificationRequestDTO notificationRequest) {
+      Long productId, String username, NotificationRequestDTO notificationRequest) {
     log.info("Setting notification for product ID {} and user {}", productId, username);
 
     User user = userService.getUserByUsername(username);
     UserProduct userProduct =
-            userProductRepository.findByUserIdAndProductId(user.getId(), productId);
+        userProductRepository.findByUserIdAndProductId(user.getId(), productId);
 
     if (userProduct == null) {
       log.error("UserProduct not found for user {} and product ID {}", username, productId);
-      throw new RuntimeException("UserProduct not found for user " + username + " and product ID " + productId);
+      throw new RuntimeException(
+          "UserProduct not found for user " + username + " and product ID " + productId);
     }
 
     userProduct.setNotificationType(notificationRequest.getNotificationType());
-    log.info("Notification type set to {} for product ID {}", notificationRequest.getNotificationType(), productId);
+    log.info(
+        "Notification type set to {} for product ID {}",
+        notificationRequest.getNotificationType(),
+        productId);
 
     if (NotificationType.BELOW_THRESHOLD.equals(notificationRequest.getNotificationType())) {
       userProduct.setNotificationPrice(notificationRequest.getNotificationPrice());
-      log.info("Notification price set to {} for product ID {}", notificationRequest.getNotificationPrice(), productId);
+      log.info(
+          "Notification price set to {} for product ID {}",
+          notificationRequest.getNotificationPrice(),
+          productId);
     } else {
       userProduct.setNotificationPrice(null);
       log.info("Notification price reset for product ID {}", productId);

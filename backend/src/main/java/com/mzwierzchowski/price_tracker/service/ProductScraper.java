@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 @Log4j2
@@ -41,7 +40,8 @@ public class ProductScraper {
       JavascriptExecutor js = (JavascriptExecutor) driver;
       wait.until(webDriver -> js.executeScript("return document.readyState").equals("complete"));
 
-      List<WebElement> cookiesButtons = driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
+      List<WebElement> cookiesButtons =
+          driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
       if (!cookiesButtons.isEmpty()) {
         WebElement acceptCookiesButton = cookiesButtons.get(0);
         if (acceptCookiesButton.isDisplayed() && acceptCookiesButton.isEnabled()) {
@@ -50,27 +50,31 @@ public class ProductScraper {
       }
 
       WebElement productNameElement =
-              driver.findElement(By.cssSelector("h1[data-testid='product-name']"));
+          driver.findElement(By.cssSelector("h1[data-testid='product-name']"));
 
-      log.debug("HTML of the product name element: {}", productNameElement.getAttribute("outerHTML"));
+      log.debug(
+          "HTML of the product name element: {}", productNameElement.getAttribute("outerHTML"));
 
       String productNameText =
-              (String)
-                      js.executeScript(
-                              "var element = arguments[0];"
-                                      + "var child = element.firstChild;"
-                                      + "while(child && child.nodeType != 3) {"
-                                      + "    child = child.nextSibling;"
-                                      + "}"
-                                      + "return child ? child.nodeValue.trim() : '';",
-                              productNameElement);
+          (String)
+              js.executeScript(
+                  "var element = arguments[0];"
+                      + "var child = element.firstChild;"
+                      + "while(child && child.nodeType != 3) {"
+                      + "    child = child.nextSibling;"
+                      + "}"
+                      + "return child ? child.nodeValue.trim() : '';",
+                  productNameElement);
 
       log.info("Extracted product name: {}", productNameText);
 
       return productNameText;
 
     } catch (TimeoutException e) {
-      log.error("TimeoutException: Failed to find the element within the allotted time for URL: {}", url, e);
+      log.error(
+          "TimeoutException: Failed to find the element within the allotted time for URL: {}",
+          url,
+          e);
       return null;
     } catch (Exception e) {
       log.error("Error while extracting the product name for URL: {}", url, e);
@@ -91,7 +95,8 @@ public class ProductScraper {
       JavascriptExecutor js = (JavascriptExecutor) driver;
       wait.until(webDriver -> js.executeScript("return document.readyState").equals("complete"));
 
-      List<WebElement> cookiesButtons = driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
+      List<WebElement> cookiesButtons =
+          driver.findElements(By.cssSelector("button[data-testid='cookie-banner-accept-all']"));
       if (!cookiesButtons.isEmpty()) {
         WebElement acceptCookiesButton = cookiesButtons.get(0);
         if (acceptCookiesButton.isDisplayed() && acceptCookiesButton.isEnabled()) {
@@ -100,10 +105,11 @@ public class ProductScraper {
       }
 
       WebElement priceSection =
-              driver.findElement(By.cssSelector("section.wrapperstyled__PriceWrapper-xngval-3"));
+          driver.findElement(By.cssSelector("section.wrapperstyled__PriceWrapper-xngval-3"));
 
       WebElement priceElement;
-      List<WebElement> discountPriceElements = priceSection.findElements(By.cssSelector("[data-selen='product-discount-price']"));
+      List<WebElement> discountPriceElements =
+          priceSection.findElements(By.cssSelector("[data-selen='product-discount-price']"));
       if (!discountPriceElements.isEmpty()) {
         priceElement = discountPriceElements.get(0);
       } else {
@@ -111,15 +117,15 @@ public class ProductScraper {
       }
 
       String priceText =
-              (String)
-                      js.executeScript(
-                              "var element = arguments[0];"
-                                      + "var child = element.firstChild;"
-                                      + "while(child && child.nodeType != 3) {"
-                                      + "    child = child.nextSibling;"
-                                      + "}"
-                                      + "return child ? child.nodeValue.trim() : '';",
-                              priceElement);
+          (String)
+              js.executeScript(
+                  "var element = arguments[0];"
+                      + "var child = element.firstChild;"
+                      + "while(child && child.nodeType != 3) {"
+                      + "    child = child.nextSibling;"
+                      + "}"
+                      + "return child ? child.nodeValue.trim() : '';",
+                  priceElement);
 
       log.debug("Extracted price text: {}", priceText);
 

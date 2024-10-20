@@ -5,13 +5,11 @@ import com.mzwierzchowski.price_tracker.model.Price;
 import com.mzwierzchowski.price_tracker.model.Product;
 import com.mzwierzchowski.price_tracker.model.UserProduct;
 import com.mzwierzchowski.price_tracker.repository.PriceRepository;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,17 +19,15 @@ import org.springframework.stereotype.Service;
 public class PriceService {
 
   private final PriceRepository priceRepository;
-  private final ProductService productService;
+
   private final UserProductService userProductService;
   private final EmailService emailService;
 
   public PriceService(
-          PriceRepository priceRepository,
-          ProductService productService,
-          UserProductService userProductService,
-          EmailService emailService) {
+      PriceRepository priceRepository,
+      UserProductService userProductService,
+      EmailService emailService) {
     this.priceRepository = priceRepository;
-    this.productService = productService;
     this.userProductService = userProductService;
     this.emailService = emailService;
   }
@@ -53,13 +49,18 @@ public class PriceService {
       priceRepository.save(price);
 
       if (userProduct.getNotificationType() == NotificationType.BELOW_LAST_PRICE
-              && currentPriceValue < product.getLastPrice()) {
+          && currentPriceValue < product.getLastPrice()) {
         log.info("Price drop detected for product {} below last price", product.getName());
-        sendPriceDropNotification(userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
+        sendPriceDropNotification(
+            userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
       } else if (userProduct.getNotificationType() == NotificationType.BELOW_THRESHOLD
-              && currentPriceValue < userProduct.getNotificationPrice()) {
-        log.info("Price drop detected for product {} below threshold: {} PLN", product.getName(), userProduct.getNotificationPrice());
-        sendPriceDropNotification(userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
+          && currentPriceValue < userProduct.getNotificationPrice()) {
+        log.info(
+            "Price drop detected for product {} below threshold: {} PLN",
+            product.getName(),
+            userProduct.getNotificationPrice());
+        sendPriceDropNotification(
+            userProduct.getUser().getUsername(), userProduct.getProduct(), currentPriceValue);
       }
 
       return true;
@@ -70,20 +71,32 @@ public class PriceService {
   }
 
   public void sendPriceDropNotification(String userEmail, Product product, double newPrice) {
-    log.info("Sending price drop notification for product: {} to user: {}", product.getName(), userEmail);
+    log.info(
+        "Sending price drop notification for product: {} to user: {}",
+        product.getName(),
+        userEmail);
 
     Map<String, Object> model = new HashMap<>();
     model.put("productName", product.getName());
     model.put("newPrice", newPrice);
     model.put("productUrl", product.getUrl());
 
-    String subject = "Powiadomienie o zmianie ceny dla produktu: " + product.getName() + " - " + LocalDate.now();
+    String subject =
+        "Powiadomienie o zmianie ceny dla produktu: " + product.getName() + " - " + LocalDate.now();
 
     try {
       emailService.sendPriceNotification(userEmail, subject, model);
-      log.info("Notification sent to {} for product {} with new price {}", userEmail, product.getName(), newPrice);
+      log.info(
+          "Notification sent to {} for product {} with new price {}",
+          userEmail,
+          product.getName(),
+          newPrice);
     } catch (Exception e) {
-      log.error("Failed to send price drop notification for product {} to user {}", product.getName(), userEmail, e);
+      log.error(
+          "Failed to send price drop notification for product {} to user {}",
+          product.getName(),
+          userEmail,
+          e);
     }
   }
 

@@ -5,7 +5,6 @@ import com.mzwierzchowski.price_tracker.model.dtos.UserDTO;
 import com.mzwierzchowski.price_tracker.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,8 @@ public class UserService {
     user.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
     User savedUser = userRepository.save(user);
-    log.info("User with email {} successfully added with ID: {}", newUser.getEmail(), savedUser.getId());
+    log.info(
+        "User with email {} successfully added with ID: {}", newUser.getEmail(), savedUser.getId());
 
     return savedUser;
   }
@@ -37,8 +37,9 @@ public class UserService {
   public User getUserById(Long id) {
     log.info("Fetching user with ID: {}", id);
     return userRepository
-            .findById(id)
-            .orElseThrow(() -> {
+        .findById(id)
+        .orElseThrow(
+            () -> {
               log.error("User not found with ID: {}", id);
               return new RuntimeException("User not found with ID: " + id);
             });
@@ -76,14 +77,17 @@ public class UserService {
 
   public User updateUser(Long id, String username, String password) {
     log.info("Attempting to update user with ID: {}", id);
-    User user = userRepository
+    User user =
+        userRepository
             .findById(id)
-            .orElseThrow(() -> {
-              log.error("User not found with ID: {}", id);
-              return new RuntimeException("User not found with ID: " + id);
-            });
+            .orElseThrow(
+                () -> {
+                  log.error("User not found with ID: {}", id);
+                  return new RuntimeException("User not found with ID: " + id);
+                });
 
-    log.info("Updating user with ID {}: new username = {}, new password = [PROTECTED]", id, username);
+    log.info(
+        "Updating user with ID {}: new username = {}, new password = [PROTECTED]", id, username);
     user.setUsername(username);
     user.setPassword(passwordEncoder.encode(password));
 
