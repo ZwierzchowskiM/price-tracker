@@ -8,14 +8,14 @@ const RegisterForm = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-    // Wyrażenie regularne do sprawdzania poprawności adresu e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Sprawdzenie, czy e-mail ma poprawny format
+        
         if (!emailRegex.test(email)) {
             setError('Podaj poprawny adres e-mail');
             return;
@@ -27,7 +27,7 @@ const RegisterForm = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/api/users/register', {
+            const response = await fetch(`${backendUrl}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,9 +47,9 @@ const RegisterForm = () => {
         }
     };
 
-    // Funkcja do obsługi przycisku "Wstecz"
+
     const handleBack = () => {
-        navigate(-1); // Cofnięcie do poprzedniej strony
+        navigate(-1); 
     };
 
     return (

@@ -9,6 +9,7 @@ const ProductDetails = () => {
     const [notificationType, setNotificationType] = useState('lastPrice'); 
     const [notificationPrice, setNotificationPrice] = useState(''); 
     const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const fetchProductDetails = async () => {
         const token = localStorage.getItem('token');  
@@ -19,7 +20,7 @@ const ProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+            const response = await fetch(`${backendUrl}/api/products/${productId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,  
@@ -50,7 +51,7 @@ const ProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/${productId}/price-history`, {
+            const response = await fetch(`${backendUrl}/api/products/${productId}/price-history`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
@@ -78,7 +79,7 @@ const ProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/${productId}/user-product`, {
+            const response = await fetch(`${backendUrl}/api/products/${productId}/user-product`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka
@@ -117,7 +118,7 @@ const ProductDetails = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/${productId}/set-notification`, {
+            const response = await fetch(`${backendUrl}/api/products/${productId}/set-notification`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Dołącz token do nagłówka

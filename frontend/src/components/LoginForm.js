@@ -7,12 +7,14 @@ const LoginForm = ({ onLoginSuccess }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/login', {
+            
+            const response = await fetch(`${backendUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,9 +28,9 @@ const LoginForm = ({ onLoginSuccess }) => {
 
             const token = await response.text();
             console.log('otrzymany token JWT:', token);
-            localStorage.setItem('token', token);  // Zapisz token w localStorage
-            onLoginSuccess();  // Wywołanie funkcji po sukcesie logowania
-            navigate('/main');  // Przekierowanie po zalogowaniu
+            localStorage.setItem('token', token);  
+            onLoginSuccess(); 
+            navigate('/main');  
         } catch (error) {
             setError('Nieprawidłowe dane logowania');
             console.log('Error:', error);

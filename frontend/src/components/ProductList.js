@@ -3,25 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress, Box
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles'; // Pobierz temat
+import { useTheme } from '@mui/material/styles'; 
 
 const ProductList = ({ userId }) => {
     const [products, setProducts] = useState([]);
     const [loadingPrice, setLoadingPrice] = useState(null);
     const navigate = useNavigate();
-    const theme = useTheme(); // Użyj tematu
+    const theme = useTheme(); 
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const fetchProducts = async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
-            navigate('/login');  // Przekieruj na stronę logowania, jeśli brak tokena
+            navigate('/login'); 
             return;
         }
 
         try {
-            const response = await fetch('http://localhost:8080/api/products/user', {
+            const response = await fetch(`${backendUrl}/api/products/user`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -29,7 +30,7 @@ const ProductList = ({ userId }) => {
                 },
             });
 
-            // Sprawdzenie błędów uwierzytelniania (401/403)
+            
             if (response.status === 401 || response.status === 403) {
                 console.error('Nieautoryzowany dostęp. Użytkownik musi się zalogować ponownie.');
                 localStorage.removeItem('token');  // Usuń nieważny token
@@ -48,8 +49,8 @@ const ProductList = ({ userId }) => {
 
         } catch (error) {
             console.error('Błąd podczas pobierania produktów:', error);
-            localStorage.removeItem('token');  // Usuń nieważny token
-            navigate('/welocme');  // Przekierowanie na stronę logowania
+            localStorage.removeItem('token');  
+            navigate('/welocme');  
             return;
         }
     };
@@ -63,11 +64,11 @@ const ProductList = ({ userId }) => {
         const token = localStorage.getItem('token');
         if (!token) {
             console.error('Brak tokena. Użytkownik nie jest zalogowany.');
-            navigate('/login');  // Przekieruj na stronę logowania, jeśli brak tokena
+            navigate('/login');  
             return;
         }
 
-        const response = await fetch(`http://localhost:8080/api/products/${productId}?userId=${userId}`, {
+        const response = await fetch(`${backendUrl}/api/products/${productId}?userId=${userId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -98,7 +99,7 @@ const ProductList = ({ userId }) => {
 
         setLoadingPrice(productId);
 
-        const response = await fetch(`http://localhost:8080/api/products/${productId}/check-price`, {
+        const response = await fetch(`${ backendUrl }/api/products/${productId}/check-price`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

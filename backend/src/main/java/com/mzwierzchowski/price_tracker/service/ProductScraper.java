@@ -105,7 +105,7 @@ public class ProductScraper {
       }
 
       WebElement priceSection =
-          driver.findElement(By.cssSelector("section.wrapperstyled__PriceWrapper-xngval-3"));
+              driver.findElement(By.cssSelector("section[class*='wrapperstyled__PriceWrapper']"));
 
       WebElement priceElement;
       List<WebElement> discountPriceElements =

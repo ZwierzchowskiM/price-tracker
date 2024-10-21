@@ -3,22 +3,23 @@ import { TextField, Button, Box, CircularProgress } from '@mui/material';
 
 const AddProductForm = ({ onProductAdded }) => {
     const [productUrl, setProductUrl] = useState('');
-    const [loading, setLoading] = useState(false);  // Stan ładowania
+    const [loading, setLoading] = useState(false); 
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Ustaw stan ładowania na true po rozpoczęciu dodawania produktu
+        setLoading(true);  
 
-        const token = localStorage.getItem('token'); // Pobieranie tokenu JWT z localStorage
+        const token = localStorage.getItem('token'); 
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/`, {
+            const response = await fetch(`${ backendUrl }/api/products/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,  // Przekazujemy token JWT
+                    'Authorization': `Bearer ${token}`,  
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url: productUrl }), // Wysyłamy tylko URL produktu
+                body: JSON.stringify({ url: productUrl }), 
             });
 
             if (response.ok) {
@@ -31,7 +32,7 @@ const AddProductForm = ({ onProductAdded }) => {
         } catch (error) {
             console.error('Wystąpił błąd:', error);
         } finally {
-            setLoading(false);  // Ustaw stan ładowania na false po zakończeniu dodawania produktu
+            setLoading(false);  
         }
     };
 
