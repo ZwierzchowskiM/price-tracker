@@ -2,6 +2,7 @@ package com.mzwierzchowski.price_tracker.controller;
 
 import com.mzwierzchowski.price_tracker.config.JwtUtils;
 import com.mzwierzchowski.price_tracker.model.dtos.AuthRequest;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,13 +10,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000") // Pozwala na połączenia z portu 3000 (frontend)
+@CrossOrigin(origins = {"http://localhost:3000", "https://price-tracker-one-delta.vercel.app"})
 public class AuthController {
 
-  private AuthenticationManager authenticationManager;
-  private JwtUtils jwtUtils;
+  private final AuthenticationManager authenticationManager;
+  private final JwtUtils jwtUtils;
 
   public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
     this.authenticationManager = authenticationManager;
@@ -31,7 +33,7 @@ public class AuthController {
                   authRequest.getUsername(), authRequest.getPassword()));
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      System.out.println("user successfully logged in");
+      log.info("user successfully logged in");
 
       return jwtUtils.generateToken(authRequest.getUsername());
 

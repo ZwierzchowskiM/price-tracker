@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "https://your-vercel-app.vercel.app"}, allowCredentials = "true")
 public class ProductController {
 
   private final ProductService productService;
