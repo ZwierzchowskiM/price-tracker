@@ -21,14 +21,14 @@ FROM openjdk:21-jdk
 WORKDIR /app
 
 # Install dependencies for Google Chrome
-RUN apt-get update && apt-get install -y wget gnupg
+RUN apk add --no-cache wget bash curl
 
-# Add Google Chrome signing key and repository
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+# Install Google Chrome from the community repository
+RUN apk add --no-cache chromium
 
-# Install Google Chrome stable version
-RUN apt-get update && apt-get install -y google-chrome-stable
+# Set CHROME_BIN and CHROME_PATH environment variables
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROME_PATH=/usr/lib/chromium/
 
 # Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
